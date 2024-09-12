@@ -9,7 +9,7 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const context = canvas.getContext('2d');
 
     // 提高画布分辨率
-    const scaleFactor = 2;
+    const scaleFactor = 10; // 提高分辨率
     context.scale(scaleFactor, scaleFactor);
 
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -28,4 +28,7 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.textBaseline = 'top';
 
     context.fillText(text, padding, padding);
+
+    canvas.style.width = `${canvas.width / scaleFactor}px`;
+    canvas.style.height = `${canvas.height / scaleFactor}px`;
 });
