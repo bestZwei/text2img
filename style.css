@@ -125,9 +125,14 @@ input[type="text"] {
 
 .preview-area {
     width: 60%;
+    height: 300px; /* 固定高度 */
+    overflow: auto; /* 添加滚动条 */
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
 .area6 {
