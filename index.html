@@ -70,9 +70,18 @@
                 <canvas id="canvas"></canvas>
             </div>
             <div class="area6">
-                <input type="text" id="link" placeholder="图片链接" readonly>
-                <input type="text" id="markdown-link" placeholder="Markdown格式链接" readonly>
-                <input type="text" id="html-link" placeholder="HTML格式链接" readonly>
+                <div class="link-group">
+                    <input type="text" id="link" placeholder="图片链接" readonly>
+                    <button onclick="copyToClipboard('link')">复制</button>
+                </div>
+                <div class="link-group">
+                    <input type="text" id="markdown-link" placeholder="Markdown格式链接" readonly>
+                    <button onclick="copyToClipboard('markdown-link')">复制</button>
+                </div>
+                <div class="link-group">
+                    <input type="text" id="html-link" placeholder="HTML格式链接" readonly>
+                    <button onclick="copyToClipboard('html-link')">复制</button>
+                </div>
             </div>
         </div>
     </div>

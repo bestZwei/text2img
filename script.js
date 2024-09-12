@@ -34,25 +34,14 @@ document.getElementById('generate-btn').addEventListener('click', function() {
         context.fillText(line, padding, padding + index * lineHeight);
     });
 
-    // Adjust canvas size for preview
-    adjustCanvasForPreview(canvas);
-    
     // Convert canvas to blob and upload to IPFS
     canvas.toBlob(uploadToIPFS);
-});
 
-function adjustCanvasForPreview(canvas) {
+    // Center the image in the preview area
     const previewArea = document.querySelector('.preview-area');
-    const previewWidth = previewArea.clientWidth;
-    const previewHeight = previewArea.clientHeight;
-
-    const scaleWidth = previewWidth / canvas.width;
-    const scaleHeight = previewHeight / canvas.height;
-    const scale = Math.min(scaleWidth, scaleHeight);
-
-    canvas.style.transform = `scale(${scale})`;
-    canvas.style.transformOrigin = 'center';
-}
+    previewArea.scrollTop = (canvas.height / scaleFactor - previewArea.clientHeight) / 2;
+    previewArea.scrollLeft = (canvas.width / scaleFactor - previewArea.clientWidth) / 2;
+});
 
 function uploadToIPFS(blob) {
     const api = 'https://cdn.ipfsscan.io/api/v0/add?pin=false';
@@ -80,4 +69,12 @@ function uploadToIPFS(blob) {
             console.error('请求失败');
         }
     });
+}
+
+function copyToClipboard(elementId) {
+    const copyText = document.getElementById(elementId);
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
+    document.execCommand("copy");
+    alert("已复制: " + copyText.value);
 }
