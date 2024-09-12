@@ -16,8 +16,8 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const lines = text.split('\n');
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
-    // Set a high resolution for the canvas
-    const scaleFactor = 6;
+    // Set a higher resolution for the canvas
+    const scaleFactor = 12; // 调高一倍
     const lineHeight = fontSize * 1.2;
 
     // Set canvas dimensions
