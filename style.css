@@ -10,31 +10,28 @@ body {
 }
 
 .main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     max-width: 800px;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
-.area2 {
+.input-area {
     display: flex;
+    justify-content: space-between;
     width: 100%;
     margin-bottom: 20px;
 }
 
-.area3 {
+textarea {
     flex: 3;
+    height: 200px;
     margin-right: 20px;
-}
-
-#text-input {
-    width: 100%;
-    height: 150px;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
@@ -43,7 +40,7 @@ body {
     font-size: 16px;
 }
 
-.area1 {
+.controls {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -87,7 +84,7 @@ button:hover {
     background-color: #0056b3;
 }
 
-.area5 {
+.preview-area {
     width: 100%;
     height: 300px;
     border: 1px solid #ccc;
