@@ -8,13 +8,16 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
 
-    // Set a high resolution for the canvas
-    const scaleFactor = 2;
-    const lineHeight = fontSize * 1.2;
+    // Set font before measuring text
+    context.font = `${fontSize}px ${fontFamily}`;
 
     // Split text into lines
     const lines = text.split('\n');
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
+
+    // Set a high resolution for the canvas
+    const scaleFactor = 2;
+    const lineHeight = fontSize * 1.2;
 
     // Set canvas dimensions
     canvas.width = (maxLineWidth + 2 * padding) * scaleFactor;
@@ -24,7 +27,6 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
     context.textBaseline = 'top';
 
