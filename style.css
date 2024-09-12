@@ -11,10 +11,10 @@ body {
 
 .container {
     background-color: #fff;
-    padding: 30px;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
+    width: 90%;
     max-width: 800px;
     text-align: center;
 }
@@ -33,8 +33,8 @@ h1 {
 }
 
 textarea {
-    width: 48%;
-    height: 200px;
+    width: 60%;
+    height: 150px;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
@@ -44,14 +44,15 @@ textarea {
 }
 
 .controls {
-    width: 48%;
+    width: 35%;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    justify-content: space-between;
 }
 
 .control-group {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    text-align: left;
 }
 
 label {
@@ -89,8 +90,7 @@ button:hover {
 
 .preview-area {
     width: 100%;
-    max-width: 600px;
-    height: 400px;
+    height: 300px;
     border: 1px solid #ccc;
     border-radius: 5px;
     overflow: hidden;
