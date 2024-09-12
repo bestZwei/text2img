@@ -16,24 +16,19 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const lines = text.split('\n');
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
-    // Adjust canvas size based on text dimensions
+    // Set canvas dimensions
     canvas.width = (maxLineWidth + 2 * padding) * scaleFactor;
     canvas.height = (lines.length * lineHeight + 2 * padding) * scaleFactor;
 
-    // Reset the scale and font after resizing
-    context.scale(scaleFactor, scaleFactor);
+    // Reset scale and clear canvas
+    context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Set font and style properties again
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
     context.textBaseline = 'top';
 
-    // Draw text
     lines.forEach((line, index) => {
         context.fillText(line, padding, padding + index * lineHeight);
     });
-
-    // Reset scale for display
-    context.setTransform(1, 0, 0, 1, 0, 0);
 });
