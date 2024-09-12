@@ -24,12 +24,6 @@ body {
     overflow: hidden;
 }
 
-h1 {
-    margin-bottom: 20px;
-    font-size: 32px;
-    color: #333;
-}
-
 .area2 {
     display: flex;
     justify-content: space-between;
