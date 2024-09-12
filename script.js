@@ -34,9 +34,25 @@ document.getElementById('generate-btn').addEventListener('click', function() {
         context.fillText(line, padding, padding + index * lineHeight);
     });
 
+    // Adjust canvas size for preview
+    adjustCanvasForPreview(canvas);
+    
     // Convert canvas to blob and upload to IPFS
     canvas.toBlob(uploadToIPFS);
 });
+
+function adjustCanvasForPreview(canvas) {
+    const previewArea = document.querySelector('.preview-area');
+    const previewWidth = previewArea.clientWidth;
+    const previewHeight = previewArea.clientHeight;
+
+    const scaleWidth = previewWidth / canvas.width;
+    const scaleHeight = previewHeight / canvas.height;
+    const scale = Math.min(scaleWidth, scaleHeight);
+
+    canvas.style.transform = `scale(${scale})`;
+    canvas.style.transformOrigin = 'center';
+}
 
 function uploadToIPFS(blob) {
     const api = 'https://cdn.ipfsscan.io/api/v0/add?pin=false';
