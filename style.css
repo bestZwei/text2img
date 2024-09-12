@@ -21,6 +21,7 @@ body {
     text-align: center;
     border: 1px solid #ddd;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 h1 {
