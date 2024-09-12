@@ -8,18 +8,25 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
 
-    // Set a higher resolution for the canvas
+    // Set a high resolution for the canvas
     const scaleFactor = 2;
-    const lineHeight = fontSize * 1.2;
-    const lines = text.split('\n');
-    const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
+    context.scale(scaleFactor, scaleFactor);
 
-    canvas.width = (maxLineWidth + 2 * padding) * scaleFactor;
-    canvas.height = (lines.length * lineHeight + 2 * padding) * scaleFactor;
+    context.font = `${fontSize}px ${fontFamily}`;
+    context.fillStyle = color;
+
+    const lines = text.split('\n');
+    const lineHeight = fontSize * 1.2;
+    const maxWidth = 400; // Set a max width for text wrapping
+
+    // Calculate canvas size
+    const textWidth = Math.max(...lines.map(line => context.measureText(line).width));
+    const textHeight = lineHeight * lines.length;
+
+    canvas.width = (textWidth + 2 * padding) * scaleFactor;
+    canvas.height = (textHeight + 2 * padding) * scaleFactor;
 
     context.scale(scaleFactor, scaleFactor);
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
     context.textBaseline = 'top';
