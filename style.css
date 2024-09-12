@@ -126,8 +126,8 @@ input[type="text"] {
 
 .preview-area {
     width: 60%;
-    height: 300px; /* 固定高度 */
-    overflow: auto; /* 添加滚动条 */
+    height: 300px;
+    overflow: auto;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
