@@ -3,7 +3,7 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const fontSize = parseInt(document.getElementById('font-size').value, 10);
     const fontFamily = document.getElementById('font-family').value;
     const color = document.getElementById('color').value;
-    const backgroundColor = document.getElementById('background-color').value;
+    const bgColor = document.getElementById('bg-color').value;
     const padding = parseInt(document.getElementById('padding').value, 10);
 
     const canvas = document.getElementById('canvas');
@@ -29,10 +29,11 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     // Set background color
-    context.fillStyle = backgroundColor;
-    context.fillRect(0, 0, canvas.width / scaleFactor, canvas.height / scaleFactor);
+    context.fillStyle = bgColor;
+    context.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Set text color and draw text
+    // Apply font settings again for drawing
+    context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
     context.textBaseline = 'top';
 
