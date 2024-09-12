@@ -20,11 +20,11 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const lineHeight = fontSize * 1.2;
 
     // Set canvas dimensions
-    canvas.width = (maxLineWidth + 2 * padding);
-    canvas.height = (lines.length * lineHeight + 2 * padding);
+    canvas.width = (maxLineWidth + 2 * padding) * scaleFactor;
+    canvas.height = (lines.length * lineHeight + 2 * padding) * scaleFactor;
 
     // Reset scale and clear canvas
-    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.fillStyle = color;
