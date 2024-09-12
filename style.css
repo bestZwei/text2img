@@ -4,9 +4,10 @@ body {
     margin: 0;
     padding: 20px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 40px);
+    min-height: 100vh;
     box-sizing: border-box;
 }
 
@@ -150,4 +151,19 @@ input[type="text"] {
 .link-group button {
     margin-top: 5px;
     width: 100%;
+}
+
+footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+footer a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+footer a:hover {
+    text-decoration: underline;
 }

@@ -9,40 +9,31 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
 
-    // 设置字体样式，用于测量文本宽度
     context.font = `${fontSize}px ${fontFamily}`;
 
-    // 将文本按行分割
     const lines = text.split('\n');
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
-    // 设置画布的分辨率
     const scaleFactor = 9;
     const lineHeight = fontSize * 1.2;
 
-    // 设置画布的宽高
     canvas.width = (maxLineWidth + 2 * padding) * scaleFactor;
     canvas.height = (lines.length * lineHeight + 2 * padding) * scaleFactor;
 
-    // 重置缩放比例并清空画布
     context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 设置背景颜色
     context.fillStyle = bgColor;
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 再次设置字体样式以绘制文本
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
     context.textBaseline = 'top';
 
-    // 绘制每一行文本
     lines.forEach((line, index) => {
         context.fillText(line, padding, padding + index * lineHeight);
     });
 
-    // 将画布内容转换为Blob并上传到IPFS
     canvas.toBlob(uploadToIPFS);
 });
 
