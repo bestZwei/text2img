@@ -27,6 +27,8 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Apply font settings again for drawing
+    context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
     context.textBaseline = 'top';
 
