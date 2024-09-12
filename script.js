@@ -1,4 +1,7 @@
-document.getElementById('generate-btn').addEventListener('click', function() {
+document.getElementById('generate-btn').addEventListener('click', generateImage);
+document.getElementById('text-input').addEventListener('input', generateImage);
+
+function generateImage() {
     const text = document.getElementById('text-input').value;
     const fontSize = parseInt(document.getElementById('font-size').value, 10);
     const fontFamily = document.getElementById('font-family').value;
@@ -33,9 +36,7 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     lines.forEach((line, index) => {
         context.fillText(line, padding, padding + index * lineHeight);
     });
-
-    canvas.toBlob(uploadToIPFS);
-});
+}
 
 function uploadToIPFS(blob) {
     const api = 'https://cdn.ipfsscan.io/api/v0/add?pin=false';
