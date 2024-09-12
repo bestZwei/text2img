@@ -10,54 +10,56 @@
 <body>
     <div class="container">
         <h1>Text to Image Converter</h1>
-        <textarea id="text-input" placeholder="输入文本..."></textarea>
-        <div class="controls">
-            <div class="control-group">
-                <label for="font-size">文字大小:</label>
-                <input type="number" id="font-size" value="20">
-            </div>
-            <div class="control-group">
-                <label for="font-family">字体:</label>
-                <select id="font-family">
-                    <!-- 中文字体 -->
-                    <option value="SimSun">宋体</option>
-                    <option value="SimHei">黑体</option>
-                    <option value="Microsoft YaHei">微软雅黑</option>
-                    <option value="KaiTi">楷体</option>
-                    <option value="FangSong">仿宋</option>
-                    <option value="NSimSun">新宋体</option>
-                    <option value="PMingLiU">新细明体</option>
-                    <option value="DFKai-SB">标楷体</option>
-                    <option value="LiSu">隶书</option>
-                    <option value="YouYuan">幼圆</option>
-                    <option value="Noto Sans SC">Noto Sans SC</option>
-                    <option value="Noto Serif SC">Noto Serif SC</option>
-                    <!-- 英文字体 -->
-                    <option value="Arial">Arial</option>
-                    <option value="Courier New">Courier New</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Verdana">Verdana</option>
-                    <option value="Roboto">Roboto</option>
-                    <option value="Open Sans">Open Sans</option>
-                    <option value="Lobster">Lobster</option>
-                    <option value="Shadows Into Light">Shadows Into Light</option>
-                    <option value="Pacifico">Pacifico</option>
-                    <option value="Raleway">Raleway</option>
-                    <option value="Montserrat">Montserrat</option>
-                    <option value="Lato">Lato</option>
-                    <option value="Oswald">Oswald</option>
-                    <option value="Ubuntu">Ubuntu</option>
-                    <option value="Playfair Display">Playfair Display</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label for="color">颜色:</label>
-                <input type="color" id="color" value="#000000">
-            </div>
-            <div class="control-group">
-                <label for="padding">边距:</label>
-                <input type="number" id="padding" value="10">
+        <div class="main-area">
+            <textarea id="text-input" placeholder="输入文本..."></textarea>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="font-size">文字大小:</label>
+                    <input type="number" id="font-size" value="20">
+                </div>
+                <div class="control-group">
+                    <label for="font-family">字体:</label>
+                    <select id="font-family">
+                        <!-- 中文字体 -->
+                        <option value="SimSun">宋体</option>
+                        <option value="SimHei">黑体</option>
+                        <option value="Microsoft YaHei">微软雅黑</option>
+                        <option value="KaiTi">楷体</option>
+                        <option value="FangSong">仿宋</option>
+                        <option value="NSimSun">新宋体</option>
+                        <option value="PMingLiU">新细明体</option>
+                        <option value="DFKai-SB">标楷体</option>
+                        <option value="LiSu">隶书</option>
+                        <option value="YouYuan">幼圆</option>
+                        <option value="Noto Sans SC">Noto Sans SC</option>
+                        <option value="Noto Serif SC">Noto Serif SC</option>
+                        <!-- 英文字体 -->
+                        <option value="Arial">Arial</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Open Sans">Open Sans</option>
+                        <option value="Lobster">Lobster</option>
+                        <option value="Shadows Into Light">Shadows Into Light</option>
+                        <option value="Pacifico">Pacifico</option>
+                        <option value="Raleway">Raleway</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Lato">Lato</option>
+                        <option value="Oswald">Oswald</option>
+                        <option value="Ubuntu">Ubuntu</option>
+                        <option value="Playfair Display">Playfair Display</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="color">颜色:</label>
+                    <input type="color" id="color" value="#000000">
+                </div>
+                <div class="control-group">
+                    <label for="padding">边距:</label>
+                    <input type="number" id="padding" value="10">
+                </div>
             </div>
         </div>
         <button id="generate-btn">生成图片</button>

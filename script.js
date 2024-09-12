@@ -8,6 +8,10 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
 
+    // 提高画布分辨率
+    const scaleFactor = 2;
+    context.scale(scaleFactor, scaleFactor);
+
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.font = `${fontSize}px ${fontFamily}`;
@@ -16,8 +20,8 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const textWidth = context.measureText(text).width;
     const textHeight = parseInt(fontSize, 10);
 
-    canvas.width = textWidth + 2 * padding;
-    canvas.height = textHeight + 2 * padding;
+    canvas.width = (textWidth + 2 * padding) * scaleFactor;
+    canvas.height = (textHeight + 2 * padding) * scaleFactor;
 
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
