@@ -8,6 +8,9 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
 
+    // Set a high resolution for the canvas
+    const scaleFactor = 6;
+
     // Set font before measuring text
     context.font = `${fontSize}px ${fontFamily}`;
 
@@ -15,13 +18,9 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const lines = text.split('\n');
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
-    // Set a high resolution for the canvas
-    const scaleFactor = 6;
-    const lineHeight = fontSize * 1.2;
-
     // Set canvas dimensions
     canvas.width = (maxLineWidth + 2 * padding) * scaleFactor;
-    canvas.height = (lines.length * lineHeight + 2 * padding) * scaleFactor;
+    canvas.height = (lines.length * fontSize * 1.2 + 2 * padding) * scaleFactor;
 
     // Reset scale and clear canvas
     context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
@@ -31,16 +30,11 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.textBaseline = 'top';
 
     lines.forEach((line, index) => {
-        context.fillText(line, padding, padding + index * lineHeight);
+        context.fillText(line, padding, padding + index * fontSize * 1.2);
     });
 
     // Convert canvas to blob and upload to IPFS
     canvas.toBlob(uploadToIPFS);
-
-    // Center the image in the preview area
-    const previewArea = document.querySelector('.preview-area');
-    previewArea.scrollTop = (canvas.height / scaleFactor - previewArea.clientHeight) / 2;
-    previewArea.scrollLeft = (canvas.width / scaleFactor - previewArea.clientWidth) / 2;
 });
 
 function uploadToIPFS(blob) {
