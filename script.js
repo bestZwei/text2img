@@ -30,7 +30,7 @@ document.getElementById('generate-btn').addEventListener('click', function() {
 
     // Set background color
     context.fillStyle = backgroundColor;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillRect(0, 0, canvas.width / scaleFactor, canvas.height / scaleFactor);
 
     // Set text color and draw text
     context.fillStyle = color;
