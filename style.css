@@ -48,7 +48,7 @@ h1 {
 
 textarea {
     width: 100%;
-    height: 250px; /* 增加高度 */
+    height: 250px;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
@@ -70,7 +70,7 @@ button {
     transition: background-color 0.3s;
     align-self: center;
     width: 50%;
-    margin-top: 10px; /* 确保按钮紧挨着输入框 */
+    margin-top: 10px;
 }
 
 button:hover {
@@ -102,7 +102,8 @@ label {
 
 input[type="number"],
 select,
-input[type="color"] {
+input[type="color"],
+input[type="text"] {
     width: 100%;
     padding: 8px;
     border-radius: 5px;
@@ -113,15 +114,25 @@ input[type="color"] {
 }
 
 .area5 {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
-    width: 100%;
-    height: 180px;
-    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.preview-area {
+    width: 60%;
     display: flex;
     justify-content: center;
     align-items: center;
-    aspect-ratio: 16 / 9;
-    box-sizing: border-box;
+}
+
+.area6 {
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }

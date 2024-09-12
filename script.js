@@ -16,7 +16,7 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
     // Set a high resolution for the canvas
-    const scaleFactor = 2;
+    const scaleFactor = 6;
     const lineHeight = fontSize * 1.2;
 
     // Set canvas dimensions
@@ -33,4 +33,35 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     lines.forEach((line, index) => {
         context.fillText(line, padding, padding + index * lineHeight);
     });
+
+    // Convert canvas to blob and upload to IPFS
+    canvas.toBlob(uploadToIPFS);
 });
+
+function uploadToIPFS(blob) {
+    const api = 'https://cdn.ipfsscan.io/api/v0/add?pin=false';
+    const formData = new FormData();
+    formData.append('file', blob);
+
+    $.ajax({
+        url: api,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.Hash) {
+                const imgSrc = `https://cdn.ipfsscan.io/ipfs/${response.Hash}`;
+                document.getElementById('link').value = imgSrc;
+                document.getElementById('markdown-link').value = `![Image](${imgSrc})`;
+                document.getElementById('html-link').value = `<img src="${imgSrc}" alt="Image">`;
+                console.log('上传成功，图片地址:', imgSrc);
+            } else {
+                console.error('上传失败');
+            }
+        },
+        error: function() {
+            console.error('请求失败');
+        }
+    });
+}
