@@ -18,6 +18,8 @@ body {
     align-items: center;
     min-height: 100vh;
     box-sizing: border-box;
+    transform: scale(1.25);
+    transform-origin: top;
 }
 
 .main-container {
