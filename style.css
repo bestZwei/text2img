@@ -32,7 +32,7 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 textarea {
