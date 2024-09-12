@@ -9,7 +9,7 @@ body {
     height: 100vh;
 }
 
-.main-container {
+.container {
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
@@ -25,27 +25,38 @@ h1 {
     color: #333;
 }
 
-.area2 {
+.content {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 20px;
 }
 
-.area1 {
+textarea {
+    width: 60%;
+    height: 150px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    resize: none;
+    font-family: inherit;
+    font-size: 16px;
+    margin-right: 20px;
+}
+
+.controls {
+    width: 35%;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    width: 30%;
+    align-items: stretch;
 }
 
 .control-group {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    margin-bottom: 15px;
 }
 
 label {
+    display: block;
     margin-bottom: 5px;
     font-size: 14px;
     color: #555;
@@ -62,22 +73,11 @@ input[type="color"] {
     font-size: 14px;
 }
 
-textarea {
-    width: 65%;
-    height: 200px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    resize: none;
-    font-family: inherit;
-    font-size: 16px;
-}
-
 button {
     background-color: #007bff;
     color: #fff;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
@@ -88,7 +88,7 @@ button:hover {
     background-color: #0056b3;
 }
 
-.area5 {
+.preview {
     width: 100%;
     height: 300px;
     border: 1px solid #ccc;
