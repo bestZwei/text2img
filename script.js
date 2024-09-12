@@ -8,14 +8,20 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
 
-    const lines = text.split('\n');
+    // Set a high resolution for the canvas
+    const scaleFactor = 2;
     const lineHeight = fontSize * 1.2;
-    const textWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
-    canvas.width = textWidth + 2 * padding;
-    canvas.height = lines.length * lineHeight + 2 * padding;
+    // Split text into lines
+    const lines = text.split('\n');
+    const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
+    canvas.width = (maxLineWidth + 2 * padding) * scaleFactor;
+    canvas.height = (lines.length * lineHeight + 2 * padding) * scaleFactor;
+
+    context.scale(scaleFactor, scaleFactor);
     context.clearRect(0, 0, canvas.width, canvas.height);
+
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
     context.textBaseline = 'top';
@@ -23,4 +29,7 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     lines.forEach((line, index) => {
         context.fillText(line, padding, padding + index * lineHeight);
     });
+
+    // Reset scale for display
+    context.scale(1 / scaleFactor, 1 / scaleFactor);
 });
