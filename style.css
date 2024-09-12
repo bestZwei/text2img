@@ -1,6 +1,14 @@
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #0056b3;
+    --background-color: #f0f2f5;
+    --text-color: #333;
+    --border-color: #ddd;
+}
+
 body {
     font-family: 'Noto Sans', sans-serif;
-    background-color: #f0f2f5;
+    background-color: var(--background-color);
     margin: 0;
     padding: 20px;
     display: flex;
@@ -19,7 +27,7 @@ body {
     width: 100%;
     max-width: 800px;
     text-align: center;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -29,17 +37,20 @@ body {
     justify-content: space-between;
     align-items: stretch;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 .area3 {
-    width: 60%;
-    border: 1px solid #ddd;
+    width: 100%;
+    max-width: 60%;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 10px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 textarea {
@@ -56,7 +67,7 @@ textarea {
 }
 
 button {
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: #fff;
     border: none;
     padding: 10px;
@@ -70,12 +81,13 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: var(--secondary-color);
 }
 
 .area1 {
-    width: 35%;
-    border: 1px solid #ddd;
+    width: 100%;
+    max-width: 35%;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 10px;
     box-sizing: border-box;
@@ -114,23 +126,27 @@ input[type="text"] {
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 10px;
     box-sizing: border-box;
+    flex-wrap: wrap;
 }
 
 .preview-area {
-    width: 60%;
+    width: 100%;
+    max-width: 60%;
     height: 300px;
     overflow: auto;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
+    margin-bottom: 20px;
 }
 
 .area6 {
-    width: 35%;
+    width: 100%;
+    max-width: 35%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -154,11 +170,18 @@ footer {
 }
 
 footer a {
-    color: #007bff;
+    color: var(--primary-color);
     text-decoration: none;
     font-size: 16px;
 }
 
 footer a:hover {
     text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .area2, .area5 {
+        flex-direction: column;
+        align-items: center;
+    }
 }

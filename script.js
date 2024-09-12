@@ -48,6 +48,9 @@ function uploadToIPFS(blob) {
         data: formData,
         processData: false,
         contentType: false,
+        beforeSend: function() {
+            console.log('正在上传...');
+        },
         success: function(response) {
             if (response.Hash) {
                 const imgSrc = `https://cdn.ipfsscan.io/ipfs/${response.Hash}`;
