@@ -11,7 +11,7 @@ body {
     font-family: 'Noto Sans', sans-serif;
     background-color: var(--background-color);
     margin: 0;
-    padding: 10px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -22,7 +22,7 @@ body {
 
 .main-container {
     background-color: #fff;
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px var(--shadow-color);
     width: 100%;
@@ -37,7 +37,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     flex-wrap: wrap;
 }
 
@@ -46,25 +46,25 @@ body {
     max-width: 60%;
     border: 1px solid var(--border-color);
     border-radius: 5px;
-    padding: 8px;
+    padding: 10px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 textarea {
     width: 100%;
-    height: 200px;
-    padding: 8px;
+    height: 250px;
+    padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
     resize: none;
     font-family: inherit;
-    font-size: 14px;
-    margin-bottom: 8px;
+    font-size: 16px;
+    margin-bottom: 10px;
     box-sizing: border-box;
     transition: box-shadow 0.3s;
 }
@@ -77,14 +77,14 @@ button {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: #fff;
     border: none;
-    padding: 8px;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
     align-self: center;
     width: 50%;
-    margin-top: 8px;
+    margin-top: 10px;
     box-shadow: 0 2px 4px var(--shadow-color);
 }
 
@@ -104,7 +104,7 @@ button:active {
     max-width: 35%;
     border: 1px solid var(--border-color);
     border-radius: 5px;
-    padding: 8px;
+    padding: 10px;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
@@ -113,15 +113,15 @@ button:active {
 }
 
 .control-group {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     text-align: left;
     width: 48%;
 }
 
 label {
     display: block;
-    margin-bottom: 3px;
-    font-size: 12px;
+    margin-bottom: 5px;
+    font-size: 14px;
     color: #555;
 }
 
@@ -130,11 +130,11 @@ select,
 input[type="color"],
 input[type="text"] {
     width: 100%;
-    padding: 6px;
+    padding: 8px;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-family: inherit;
-    font-size: 12px;
+    font-size: 14px;
     box-sizing: border-box;
     transition: box-shadow 0.3s;
 }
@@ -149,7 +149,7 @@ input:focus {
     align-items: stretch;
     border: 1px solid var(--border-color);
     border-radius: 5px;
-    padding: 8px;
+    padding: 10px;
     box-sizing: border-box;
     flex-wrap: wrap;
     box-shadow: 0 2px 4px var(--shadow-color);
@@ -158,12 +158,12 @@ input:focus {
 .preview-area {
     width: 100%;
     max-width: 60%;
-    height: 250px;
+    height: 300px;
     overflow: auto;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     box-shadow: 0 2px 4px var(--shadow-color);
 }
 
@@ -176,26 +176,26 @@ input:focus {
 }
 
 .link-group {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
 .link-group button {
-    margin-top: 4px;
+    margin-top: 5px;
     width: 100%;
 }
 
 footer {
-    margin-top: 15px;
+    margin-top: 20px;
     text-align: center;
 }
 
 footer a {
     color: var(--primary-color);
     text-decoration: none;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 footer a:hover {
