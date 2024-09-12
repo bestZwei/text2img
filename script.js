@@ -8,9 +8,6 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
 
-    // Set a high resolution for the canvas
-    const scaleFactor = 6;
-
     // Set font before measuring text
     context.font = `${fontSize}px ${fontFamily}`;
 
@@ -18,19 +15,23 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const lines = text.split('\n');
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
+    // Set a high resolution for the canvas
+    const scaleFactor = 6;
+    const lineHeight = fontSize * 1.2;
+
     // Set canvas dimensions
-    canvas.width = (maxLineWidth + 2 * padding) * scaleFactor;
-    canvas.height = (lines.length * fontSize * 1.2 + 2 * padding) * scaleFactor;
+    canvas.width = (maxLineWidth + 2 * padding);
+    canvas.height = (lines.length * lineHeight + 2 * padding);
 
     // Reset scale and clear canvas
-    context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
+    context.setTransform(1, 0, 0, 1, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.fillStyle = color;
     context.textBaseline = 'top';
 
     lines.forEach((line, index) => {
-        context.fillText(line, padding, padding + index * fontSize * 1.2);
+        context.fillText(line, padding, padding + index * lineHeight);
     });
 
     // Convert canvas to blob and upload to IPFS
