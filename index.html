@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Image</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Text to Image Converter</h1>
+        <textarea id="text-input" placeholder="输入文本..."></textarea>
+        <div class="controls">
+            <label for="font-size">文字大小:</label>
+            <input type="number" id="font-size" value="20">
+            
+            <label for="font-family">字体:</label>
+            <select id="font-family">
+                <option value="Arial">Arial</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+            </select>
+            
+            <label for="color">颜色:</label>
+            <input type="color" id="color" value="#000000">
+            
+            <label for="padding">边距:</label>
+            <input type="number" id="padding" value="10">
+        </div>
+        <button id="generate-btn">生成图片</button>
+        <canvas id="canvas"></canvas>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
