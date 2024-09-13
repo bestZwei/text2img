@@ -73,6 +73,9 @@ function uploadToIPFS(blob, filename) {
                 document.getElementById('markdown-link').value = `![Image](${imgSrc})`;
                 document.getElementById('html-link').value = `<img src="${imgSrc}" alt="Image">`;
                 console.log('上传成功，图片地址:', imgSrc);
+
+                // 调用 seeding 函数
+                setTimeout(() => seeding(response.Hash), 3000);
             } else {
                 console.error('上传失败');
             }
@@ -82,6 +85,30 @@ function uploadToIPFS(blob, filename) {
         }
     });
 }
+
+function seeding(hash) {
+    const gateways = [
+        `https://cdn.ipfsscan.io/ipfs/${hash}`,
+        `https://ipfs.io/ipfs/${hash}`,
+        `https://i0.img2ipfs.com/ipfs/${hash}`,
+        `https://ipfs.crossbell.io/ipfs/${hash}`,
+        `https://gateway.ipfsscan.io/ipfs/${hash}`,
+        `https://ipfs.cyou/ipfs/${hash}`,
+        `https://gateway.pinata.cloud/ipfs/${hash}`,
+        `https://hardbin.com/ipfs/${hash}`,
+        `https://dlunar.net/ipfs/${hash}`,
+        `https://w3s.link/ipfs/${hash}`,
+        `https://dweb.link/ipfs/${hash}`,
+        `https://ipfs.infura-ipfs.io/ipfs/${hash}`
+    ];
+
+    gateways.forEach(url => {
+        fetch(url)
+            .then(response => console.log(`Seeding ${url}: ${response.status}`))
+            .catch(error => console.error(`Error seeding ${url}:`, error));
+    });
+}
+
 
 function copyToClipboard(elementId) {
     const copyText = document.getElementById(elementId);
