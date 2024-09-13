@@ -83,7 +83,7 @@ button {
     font-size: 14px;
     transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
     align-self: center;
-    width: 50%;
+    width: 48%;
     margin-top: 10px;
     box-shadow: 0 2px 4px var(--shadow-color);
 }
@@ -173,6 +173,12 @@ input:focus {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
 }
 
 .link-group {

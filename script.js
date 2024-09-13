@@ -42,6 +42,14 @@ document.getElementById('upload-btn').addEventListener('click', function() {
     });
 });
 
+document.getElementById('download-btn').addEventListener('click', function() {
+    const canvas = document.getElementById('canvas');
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'image.png';
+    link.click();
+});
+
 function uploadToIPFS(blob) {
     const api = 'https://cdn.ipfsscan.io/api/v0/add?pin=false';
     const formData = new FormData();
