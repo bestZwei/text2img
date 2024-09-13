@@ -37,20 +37,22 @@ document.getElementById('generate-btn').addEventListener('click', function() {
 
 document.getElementById('upload-btn').addEventListener('click', function() {
     const canvas = document.getElementById('canvas');
+    const filename = document.getElementById('filename').value || 'text2img';
     canvas.toBlob(function(blob) {
-        uploadToIPFS(blob);
+        uploadToIPFS(blob, filename);
     });
 });
 
 document.getElementById('download-btn').addEventListener('click', function() {
     const canvas = document.getElementById('canvas');
+    const filename = document.getElementById('filename').value || 'text2img';
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
-    link.download = 'image.png';
+    link.download = `${filename}.png`;
     link.click();
 });
 
-function uploadToIPFS(blob) {
+function uploadToIPFS(blob, filename) {
     const api = 'https://cdn.ipfsscan.io/api/v0/add?pin=false';
     const formData = new FormData();
     formData.append('file', blob);
@@ -66,7 +68,7 @@ function uploadToIPFS(blob) {
         },
         success: function(response) {
             if (response.Hash) {
-                const imgSrc = `https://cdn.ipfsscan.io/ipfs/${response.Hash}`;
+                const imgSrc = `https://cdn.ipfsscan.io/ipfs/${response.Hash}?filename=${filename}.png`;
                 document.getElementById('link').value = imgSrc;
                 document.getElementById('markdown-link').value = `![Image](${imgSrc})`;
                 document.getElementById('html-link').value = `<img src="${imgSrc}" alt="Image">`;
