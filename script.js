@@ -68,7 +68,7 @@ function uploadToIPFS(blob, filename) {
         },
         success: function(response) {
             if (response.Hash) {
-                const imgSrc = `https://cdn.ipfsscan.io/ipfs/${response.Hash}?filename=${filename}.png`;
+                const imgSrc = `https://i0.img2ipfs.com/ipfs/${response.Hash}?filename=${filename}.png`;
                 document.getElementById('link').value = imgSrc;
                 document.getElementById('markdown-link').value = `![Image](${imgSrc})`;
                 document.getElementById('html-link').value = `<img src="${imgSrc}" alt="Image">`;
