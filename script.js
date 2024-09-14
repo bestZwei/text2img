@@ -5,6 +5,8 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const color = document.getElementById('color').value;
     const bgColor = document.getElementById('bg-color').value;
     const padding = parseInt(document.getElementById('padding').value, 10);
+    const transparentBg = document.getElementById('transparent-bg').checked;
+    const squareImg = document.getElementById('square-img').checked;
 
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
@@ -17,14 +19,25 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const scaleFactor = 9;
     const lineHeight = fontSize * 1.2;
 
-    canvas.width = (maxLineWidth + 2 * padding) * scaleFactor;
-    canvas.height = (lines.length * lineHeight + 2 * padding) * scaleFactor;
+    let canvasWidth = (maxLineWidth + 2 * padding) * scaleFactor;
+    let canvasHeight = (lines.length * lineHeight + 2 * padding) * scaleFactor;
+
+    if (squareImg) {
+        const maxSize = Math.max(canvasWidth, canvasHeight);
+        canvasWidth = maxSize;
+        canvasHeight = maxSize;
+    }
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
     context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.fillStyle = bgColor;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    if (!transparentBg) {
+        context.fillStyle = bgColor;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
