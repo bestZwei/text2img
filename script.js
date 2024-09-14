@@ -43,15 +43,16 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.fillStyle = color;
     context.textBaseline = 'top';
 
-    let yOffset = padding;
+    let textY = padding;
     if (squareImg) {
         const totalTextHeight = lines.length * lineHeight;
-        yOffset = (canvasHeight / scaleFactor - totalTextHeight) / 2;
+        textY = (canvasHeight / scaleFactor - totalTextHeight) / 2;
     }
 
     lines.forEach((line, index) => {
-        const xOffset = squareImg ? (canvasWidth / scaleFactor - context.measureText(line).width) / 2 : padding;
-        context.fillText(line, xOffset, yOffset + index * lineHeight);
+        const textWidth = context.measureText(line).width;
+        const textX = squareImg ? (canvasWidth / scaleFactor - textWidth) / 2 : padding;
+        context.fillText(line, textX, textY + index * lineHeight);
     });
 });
 
