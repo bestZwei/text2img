@@ -43,8 +43,16 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.fillStyle = color;
     context.textBaseline = 'top';
 
+    let startY = padding;
+    if (squareImg) {
+        const totalTextHeight = lines.length * lineHeight;
+        startY = (canvasHeight / scaleFactor - totalTextHeight) / 2;
+    }
+
     lines.forEach((line, index) => {
-        context.fillText(line, padding, padding + index * lineHeight);
+        const textWidth = context.measureText(line).width;
+        const startX = (canvasWidth / scaleFactor - textWidth) / 2;
+        context.fillText(line, startX, startY + index * lineHeight);
     });
 });
 
