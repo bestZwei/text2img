@@ -135,3 +135,53 @@ function copyToClipboard(elementId) {
     document.execCommand("copy");
     alert("已复制: " + copyText.value);
 }
+
+// 保存设置到 localStorage
+function saveSettings() {
+    const settings = {
+        fontSize: document.getElementById('font-size').value,
+        fontFamily: document.getElementById('font-family').value,
+        color: document.getElementById('color').value,
+        bgColor: document.getElementById('bg-color').value,
+        padding: document.getElementById('padding').value,
+        transparentBg: document.getElementById('transparent-bg').checked,
+        squareImg: document.getElementById('square-img').checked,
+        filename: document.getElementById('filename').value
+    };
+    localStorage.setItem('text2imgSettings', JSON.stringify(settings));
+}
+
+// 从 localStorage 加载设置
+function loadSettings() {
+    const savedSettings = localStorage.getItem('text2imgSettings');
+    if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        document.getElementById('font-size').value = settings.fontSize;
+        document.getElementById('font-family').value = settings.fontFamily;
+        document.getElementById('color').value = settings.color;
+        document.getElementById('bg-color').value = settings.bgColor;
+        document.getElementById('padding').value = settings.padding;
+        document.getElementById('transparent-bg').checked = settings.transparentBg;
+        document.getElementById('square-img').checked = settings.squareImg;
+        document.getElementById('filename').value = settings.filename;
+    }
+}
+
+// 添加事件监听器来保存设置
+function addSettingsListeners() {
+    const settingsElements = [
+        'font-size', 'font-family', 'color', 'bg-color',
+        'padding', 'transparent-bg', 'square-img', 'filename'
+    ];
+    
+    settingsElements.forEach(id => {
+        const element = document.getElementById(id);
+        element.addEventListener('change', saveSettings);
+    });
+}
+
+// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', function() {
+    loadSettings();
+    addSettingsListeners();
+});
