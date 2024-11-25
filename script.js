@@ -16,7 +16,7 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const lines = text.split('\n');
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
-    const scaleFactor = 9;
+    const scaleFactor = 10;
     const lineHeight = fontSize * 1.2;
 
     let canvasWidth = (maxLineWidth + 2 * padding) * scaleFactor;
