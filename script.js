@@ -76,6 +76,14 @@ function uploadToIPFS(blob, filename) {
     const formData = new FormData();
     formData.append('file', blob);
 
+    const maxRetries = 3;
+    let retryCount = 0;
+    
+    if (blob.size > 5 * 1024 * 1024) { // 5MB限制
+        console.error('文件过大');
+        return;
+    }
+
     $.ajax({
         url: api,
         type: 'POST',
@@ -99,8 +107,13 @@ function uploadToIPFS(blob, filename) {
                 console.error('上传失败');
             }
         },
-        error: function() {
-            console.error('请求失败');
+        error: function(xhr, status, error) {
+            handleError(error, '上传失败，请检查网络连接或稍后重试');
+            // 添加重试逻辑
+            if (retryCount < maxRetries) {
+                retryCount++;
+                setTimeout(() => uploadToIPFS(blob, filename), 1000 * retryCount);
+            }
         }
     });
 }
@@ -184,4 +197,64 @@ function addSettingsListeners() {
 document.addEventListener('DOMContentLoaded', function() {
     loadSettings();
     addSettingsListeners();
+});
+
+function handleError(error, message) {
+    console.error(error);
+    const errorDiv = document.getElementById('error-message') || document.createElement('div');
+    errorDiv.id = 'error-message';
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message || '操作失败，请稍后重试';
+    document.querySelector('.main-container').prepend(errorDiv);
+    setTimeout(() => errorDiv.remove(), 3000);
+}
+
+// 添加防抖处理
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// 对生成图片功能进行防抖
+const debouncedGenerate = debounce(function() {
+    // 原generate-btn的处理逻辑
+}, 300);
+
+// 添加节流函数
+function throttle(func, limit) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    }
+}
+
+// 优化图片生成事件处理
+const textInput = document.getElementById('text-input');
+textInput.addEventListener('input', throttle(function() {
+    document.getElementById('generate-btn').click();
+}, 500));
+
+// 优化 canvas 渲染性能
+function generateImage() {
+    // 使用 requestAnimationFrame
+    requestAnimationFrame(() => {
+        // ... 现有的图片生成代码 ...
+    });
+}
+
+// 优化字体加载
+document.fonts.ready.then(() => {
+    // 字体加载完成后再生成图片
+    document.getElementById('generate-btn').click();
 });

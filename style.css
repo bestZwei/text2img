@@ -220,4 +220,37 @@ footer a:hover {
     button {
         width: 100%;
     }
+
+    .control-group {
+        width: 100%;
+    }
+    
+    .button-group button {
+        margin-bottom: 10px;
+    }
+}
+
+.loading {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+// 添加错误提示样式
+.error-message {
+    color: #ff4444;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+// 添加加载状态指示器样式
+.loading-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none;
 }
