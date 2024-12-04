@@ -9,8 +9,9 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const fontFamily = document.getElementById('font-family').value;
     const color = document.getElementById('color').value;
     const lineSpacing = parseFloat(document.getElementById('line-spacing').value);
+    const padding = parseInt(document.getElementById('padding').value, 10);
+    const squareImg = document.getElementById('square-img').checked;
     
-    // 修改行高计算
     const lineHeight = fontSize * lineSpacing;
     
     const canvas = document.getElementById('canvas');
@@ -23,7 +24,6 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const scaleFactor = 10;
     
     let canvasWidth = (maxLineWidth + 2 * padding) * scaleFactor;
-    // 使用新的行高计算画布高度
     let canvasHeight = (lines.length * lineHeight + 2 * padding) * scaleFactor;
     
     if (squareImg) {
@@ -38,20 +38,43 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 优化渐变效果
-    if (!backgroundImage) {
+    if (backgroundImage) {
+        const bgOpacity = document.getElementById('bg-opacity').value / 100;
+        const fitMode = document.getElementById('bg-fit').value;
+        
+        context.save();
+        context.globalAlpha = bgOpacity;
+        
+        const canvasWidthScaled = canvas.width / scaleFactor;
+        const canvasHeightScaled = canvas.height / scaleFactor;
+        
+        switch (fitMode) {
+            case 'cover':
+                drawImageCover(context, backgroundImage, 0, 0, canvasWidthScaled, canvasHeightScaled);
+                break;
+            case 'contain':
+                drawImageContain(context, backgroundImage, 0, 0, canvasWidthScaled, canvasHeightScaled);
+                break;
+            case 'stretch':
+                context.drawImage(backgroundImage, 0, 0, canvasWidthScaled, canvasHeightScaled);
+                break;
+            case 'tile':
+                drawImageTile(context, backgroundImage, canvasWidthScaled, canvasHeightScaled);
+                break;
+        }
+        
+        context.restore();
+    } else {
         const bgColorStart = document.getElementById('bg-color-start').value;
         const bgColorEnd = document.getElementById('bg-color-end').value;
         const gradientAngle = parseInt(document.getElementById('gradient-angle').value, 10);
         const bgOpacity = document.getElementById('bg-opacity').value / 100;
         
-        // 计算渐变的起点和终点
         const angleInRad = (gradientAngle - 90) * Math.PI / 180;
         const canvasWidthScaled = canvas.width / scaleFactor;
         const canvasHeightScaled = canvas.height / scaleFactor;
         const diagonal = Math.sqrt(canvasWidthScaled * canvasWidthScaled + canvasHeightScaled * canvasHeightScaled);
         
-        // 使用对角线长度来确保渐变覆盖整个画布
         const centerX = canvasWidthScaled / 2;
         const centerY = canvasHeightScaled / 2;
         const startX = centerX - Math.cos(angleInRad) * diagonal;
@@ -61,7 +84,6 @@ document.getElementById('generate-btn').addEventListener('click', function() {
         
         const gradient = context.createLinearGradient(startX, startY, endX, endY);
         
-        // 添加多个色标以增强渐变效果
         gradient.addColorStop(0, addAlphaToColor(bgColorStart, bgOpacity));
         gradient.addColorStop(0.5, mixColors(bgColorStart, bgColorEnd, 0.5, bgOpacity));
         gradient.addColorStop(1, addAlphaToColor(bgColorEnd, bgOpacity));
@@ -70,7 +92,6 @@ document.getElementById('generate-btn').addEventListener('click', function() {
         context.fillRect(0, 0, canvasWidthScaled, canvasHeightScaled);
     }
     
-    // 绘制文本时使用新的行高
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
     context.textBaseline = 'top';
@@ -84,18 +105,14 @@ document.getElementById('generate-btn').addEventListener('click', function() {
         const xOffset = squareImg ? 
             (canvasWidth / scaleFactor - context.measureText(line).width) / 2 : 
             padding;
-        // 使用新的行高计算每行的y位置
         context.fillText(line, xOffset, yOffset + index * lineHeight);
     });
     
-    // 在生成图片后添加缩放逻辑
     const previewArea = document.querySelector('.preview-area');
     const previewWidth = previewArea.clientWidth;
     
-    // 计算缩放比例
     const scale = previewWidth / canvas.width;
     
-    // 设置canvas的显示尺寸（不改变实际分辨率）
     if (canvas.width > previewWidth) {
         canvas.style.width = previewWidth + 'px';
         canvas.style.height = (canvas.height * scale) + 'px';
@@ -103,8 +120,7 @@ document.getElementById('generate-btn').addEventListener('click', function() {
         canvas.style.width = '';
         canvas.style.height = '';
     }
-
-    // 添加提示文本
+    
     canvas.title = '点击查看原始大小';
 });
 
@@ -155,7 +171,6 @@ function uploadToIPFS(blob, filename) {
                 document.getElementById('html-link').value = `<img src="${imgSrc}" alt="Image">`;
                 console.log('上传成功，图片地址:', imgSrc);
 
-                // 调用 seeding 函数
                 setTimeout(() => seeding(response.Hash), 3000);
             } else {
                 console.error('上传失败');
@@ -163,7 +178,6 @@ function uploadToIPFS(blob, filename) {
         },
         error: function(xhr, status, error) {
             handleError(error, '上传失败，请检查网络连接或稍后重试');
-            // 添加重试逻辑
             if (retryCount < maxRetries) {
                 retryCount++;
                 setTimeout(() => uploadToIPFS(blob, filename), 1000 * retryCount);
@@ -203,7 +217,6 @@ function copyToClipboard(elementId) {
     alert("已复制: " + copyText.value);
 }
 
-// 保存设置到 localStorage
 function saveSettings() {
     const settings = {
         fontSize: document.getElementById('font-size').value,
@@ -221,7 +234,6 @@ function saveSettings() {
     localStorage.setItem('text2imgSettings', JSON.stringify(settings));
 }
 
-// 从 localStorage 加载设置
 function loadSettings() {
     const savedSettings = localStorage.getItem('text2imgSettings');
     if (savedSettings) {
@@ -241,7 +253,6 @@ function loadSettings() {
     }
 }
 
-// 添加事件监听器来保存设置
 function addSettingsListeners() {
     const settingsElements = [
         'font-size', 'font-family', 'color', 'bg-color-start', 'bg-color-end', 'gradient-angle', 'bg-opacity',
@@ -254,7 +265,6 @@ function addSettingsListeners() {
     });
 }
 
-// 页面加载时初始化
 document.addEventListener('DOMContentLoaded', function() {
     loadSettings();
     addSettingsListeners();
@@ -266,13 +276,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalCanvas = document.getElementById('modal-canvas');
         const modalContent = document.querySelector('.modal-content');
         
-        // 复制原始canvas内容到模态框canvas
         modalCanvas.width = this.width;
         modalCanvas.height = this.height;
         const ctx = modalCanvas.getContext('2d');
         ctx.drawImage(this, 0, 0);
         
-        // 如果原始宽度小于模态框宽度，则使用原始宽度
         if (this.width < 800) {
             modalContent.style.width = this.width + 'px';
         } else {
@@ -293,7 +301,6 @@ function handleError(error, message) {
     setTimeout(() => errorDiv.remove(), 3000);
 }
 
-// 添加防抖处理
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -306,12 +313,10 @@ function debounce(func, wait) {
     };
 }
 
-// 对生成图片功能进行防抖
 const debouncedGenerate = debounce(function() {
     // 原generate-btn的处理逻辑
 }, 300);
 
-// 添加节流函数
 function throttle(func, limit) {
     let inThrottle;
     return function(...args) {
@@ -323,27 +328,21 @@ function throttle(func, limit) {
     }
 }
 
-// 优化图片生成事件处理
 const textInput = document.getElementById('text-input');
 textInput.addEventListener('input', throttle(function() {
     document.getElementById('generate-btn').click();
 }, 500));
 
-// 优化 canvas 渲染性能
 function generateImage() {
-    // 使用 requestAnimationFrame
     requestAnimationFrame(() => {
         // ... 现有的图片生成代码 ...
     });
 }
 
-// 优化字体加载
 document.fonts.ready.then(() => {
-    // 字体加载完成后再生成图片
     document.getElementById('generate-btn').click();
 });
 
-// 添加模态框HTML
 function createModal() {
     const modal = document.createElement('div');
     modal.className = 'modal';
@@ -377,31 +376,26 @@ function createModal() {
         }, 300);
     }
 
-    // 关闭按钮事件
     closeBtn.addEventListener('click', hideModal);
 
-    // 点击背景关闭
     modal.addEventListener('click', (e) => {
         if (e.target === modal) hideModal();
     });
 
-    // ESC键关闭
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.style.display === 'block') hideModal();
     });
 
-    // 滚轮缩放
     modal.addEventListener('wheel', (e) => {
         e.preventDefault();
         const delta = e.deltaY > 0 ? 0.9 : 1.1;
         scale *= delta;
-        scale = Math.min(Math.max(0.5, scale), 3); // 限制缩放范围
+        scale = Math.min(Math.max(0.5, scale), 3);
         
         const newWidth = originalWidth * scale;
         modalContent.style.width = `${newWidth}px`;
     });
 
-    // 双击还原
     modalContent.addEventListener('dblclick', () => {
         scale = 1;
         modalContent.style.width = originalWidth > 800 ? '800px' : `${originalWidth}px`;
@@ -433,7 +427,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// 添加辅助函数来处理颜色透明度
 function addAlphaToColor(color, alpha) {
     const r = parseInt(color.slice(1,3), 16);
     const g = parseInt(color.slice(3,5), 16);
@@ -441,15 +434,12 @@ function addAlphaToColor(color, alpha) {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-// 添加透明度滑块值显示更新
 document.getElementById('bg-opacity').addEventListener('input', function() {
     document.getElementById('opacity-value').textContent = this.value + '%';
 });
 
-// 添加背景图片相关变量
 let backgroundImage = null;
 
-// 监听背景图片上传
 document.getElementById('bg-image').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
@@ -466,14 +456,12 @@ document.getElementById('bg-image').addEventListener('change', function(e) {
     }
 });
 
-// 清除背景图片
 document.getElementById('clear-bg').addEventListener('click', function() {
     backgroundImage = null;
     document.getElementById('bg-image').value = '';
     document.getElementById('generate-btn').click();
 });
 
-// 辅助函数：Cover 模式绘制
 function drawImageCover(ctx, img, x, y, width, height) {
     const imgRatio = img.width / img.height;
     const containerRatio = width / height;
@@ -493,7 +481,6 @@ function drawImageCover(ctx, img, x, y, width, height) {
     ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
 }
 
-// 辅助函数：Contain 模式绘制
 function drawImageContain(ctx, img, x, y, width, height) {
     const imgRatio = img.width / img.height;
     const containerRatio = width / height;
@@ -513,14 +500,12 @@ function drawImageContain(ctx, img, x, y, width, height) {
     ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
 }
 
-// 辅助函数：Tile 模式绘制
 function drawImageTile(ctx, img, width, height) {
     const pattern = ctx.createPattern(img, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, width, height);
 }
 
-// 添加颜色混合函数
 function mixColors(color1, color2, ratio, alpha) {
     const r1 = parseInt(color1.slice(1,3), 16);
     const g1 = parseInt(color1.slice(3,5), 16);
