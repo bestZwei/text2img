@@ -378,3 +378,27 @@ footer a:hover {
 .modal.show .modal-hint {
     opacity: 1;
 }
+
+/* 为文件上传按钮添加样式 */
+input[type="file"] {
+    width: 100%;
+    padding: 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+/* 小按钮样式 */
+.small-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    width: 100%;
+    margin-top: 0;
+}
+
+/* 确保背景图片控制组占据整行 */
+.control-group:has(#bg-image),
+.control-group:has(#bg-fit),
+.control-group:has(#clear-bg) {
+    width: 100%;
+}

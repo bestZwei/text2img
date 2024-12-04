@@ -40,21 +40,54 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    const gradient = context.createLinearGradient(
-        canvas.width/2 - Math.cos((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
-        canvas.height/2 - Math.sin((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
-        canvas.width/2 + Math.cos((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
-        canvas.height/2 + Math.sin((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2
-    );
+    if (backgroundImage) {
+        const bgOpacity = document.getElementById('bg-opacity').value / 100;
+        const fitMode = document.getElementById('bg-fit').value;
+        
+        // 保存当前上下文状态
+        context.save();
+        
+        // 设置全局透明度
+        context.globalAlpha = bgOpacity;
+        
+        // 根据适配模式绘制背景
+        const canvasWidth = canvas.width / scaleFactor;
+        const canvasHeight = canvas.height / scaleFactor;
+        
+        switch (fitMode) {
+            case 'cover':
+                drawImageCover(context, backgroundImage, 0, 0, canvasWidth, canvasHeight);
+                break;
+            case 'contain':
+                drawImageContain(context, backgroundImage, 0, 0, canvasWidth, canvasHeight);
+                break;
+            case 'stretch':
+                context.drawImage(backgroundImage, 0, 0, canvasWidth, canvasHeight);
+                break;
+            case 'tile':
+                drawImageTile(context, backgroundImage, canvasWidth, canvasHeight);
+                break;
+        }
+        
+        // 恢复上下文状态
+        context.restore();
+    } else {
+        const gradient = context.createLinearGradient(
+            canvas.width/2 - Math.cos((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
+            canvas.height/2 - Math.sin((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
+            canvas.width/2 + Math.cos((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
+            canvas.height/2 + Math.sin((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2
+        );
 
-    const startColor = addAlphaToColor(bgColorStart, bgOpacity);
-    const endColor = addAlphaToColor(bgColorEnd, bgOpacity);
-    
-    gradient.addColorStop(0, startColor);
-    gradient.addColorStop(1, endColor);
-    
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, canvas.width/scaleFactor, canvas.height/scaleFactor);
+        const startColor = addAlphaToColor(bgColorStart, bgOpacity);
+        const endColor = addAlphaToColor(bgColorEnd, bgOpacity);
+        
+        gradient.addColorStop(0, startColor);
+        gradient.addColorStop(1, endColor);
+        
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, canvas.width/scaleFactor, canvas.height/scaleFactor);
+    }
 
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
@@ -197,7 +230,8 @@ function saveSettings() {
         bgOpacity: document.getElementById('bg-opacity').value,
         padding: document.getElementById('padding').value,
         squareImg: document.getElementById('square-img').checked,
-        filename: document.getElementById('filename').value
+        filename: document.getElementById('filename').value,
+        bgFit: document.getElementById('bg-fit').value,
     };
     localStorage.setItem('text2imgSettings', JSON.stringify(settings));
 }
@@ -218,6 +252,7 @@ function loadSettings() {
         document.getElementById('padding').value = settings.padding;
         document.getElementById('square-img').checked = settings.squareImg;
         document.getElementById('filename').value = settings.filename;
+        document.getElementById('bg-fit').value = settings.bgFit || 'cover';
     }
 }
 
@@ -225,7 +260,7 @@ function loadSettings() {
 function addSettingsListeners() {
     const settingsElements = [
         'font-size', 'font-family', 'color', 'bg-color-start', 'bg-color-end', 'gradient-angle', 'bg-opacity',
-        'padding', 'square-img', 'filename'
+        'padding', 'square-img', 'filename', 'bg-fit'
     ];
     
     settingsElements.forEach(id => {
@@ -425,3 +460,77 @@ function addAlphaToColor(color, alpha) {
 document.getElementById('bg-opacity').addEventListener('input', function() {
     document.getElementById('opacity-value').textContent = this.value + '%';
 });
+
+// 添加背景图片相关变量
+let backgroundImage = null;
+
+// 监听背景图片上传
+document.getElementById('bg-image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                backgroundImage = img;
+                document.getElementById('generate-btn').click();
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 清除背景图片
+document.getElementById('clear-bg').addEventListener('click', function() {
+    backgroundImage = null;
+    document.getElementById('bg-image').value = '';
+    document.getElementById('generate-btn').click();
+});
+
+// 辅助函数：Cover 模式绘制
+function drawImageCover(ctx, img, x, y, width, height) {
+    const imgRatio = img.width / img.height;
+    const containerRatio = width / height;
+    let drawWidth, drawHeight;
+    
+    if (containerRatio > imgRatio) {
+        drawWidth = width;
+        drawHeight = width / imgRatio;
+    } else {
+        drawHeight = height;
+        drawWidth = height * imgRatio;
+    }
+    
+    const drawX = x + (width - drawWidth) / 2;
+    const drawY = y + (height - drawHeight) / 2;
+    
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+}
+
+// 辅助函数：Contain 模式绘制
+function drawImageContain(ctx, img, x, y, width, height) {
+    const imgRatio = img.width / img.height;
+    const containerRatio = width / height;
+    let drawWidth, drawHeight;
+    
+    if (containerRatio < imgRatio) {
+        drawWidth = width;
+        drawHeight = width / imgRatio;
+    } else {
+        drawHeight = height;
+        drawWidth = height * imgRatio;
+    }
+    
+    const drawX = x + (width - drawWidth) / 2;
+    const drawY = y + (height - drawHeight) / 2;
+    
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+}
+
+// 辅助函数：Tile 模式绘制
+function drawImageTile(ctx, img, width, height) {
+    const pattern = ctx.createPattern(img, 'repeat');
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, width, height);
+}
