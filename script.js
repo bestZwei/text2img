@@ -1,5 +1,10 @@
 document.getElementById('generate-btn').addEventListener('click', function() {
     const text = document.getElementById('text-input').value;
+    const maxCharsPerLine = parseInt(document.getElementById('max-chars-per-line').value, 10);
+    const lines = text.split('\n').map(line => {
+        const regex = new RegExp(`.{1,${maxCharsPerLine}}`, 'g');
+        return line.match(regex) || [];
+    }).flat();
     const fontSize = parseInt(document.getElementById('font-size').value, 10);
     const fontFamily = document.getElementById('font-family').value;
     const color = document.getElementById('color').value;
@@ -13,7 +18,6 @@ document.getElementById('generate-btn').addEventListener('click', function() {
 
     context.font = `${fontSize}px ${fontFamily}`;
 
-    const lines = text.split('\n');
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
 
     const scaleFactor = 10;
