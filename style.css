@@ -106,7 +106,7 @@ button:active {
     border-radius: 5px;
     padding: 10px;
     box-sizing: border-box;
-    display: flex;
+    display: block;
     flex-wrap: wrap;
     justify-content: space-between;
     box-shadow: 0 2px 4px var(--shadow-color);
@@ -138,14 +138,8 @@ button:active {
 .control-group {
     margin-bottom: 12px;
     text-align: left;
-    width: 48%;
+    width: 100%;
     min-width: 120px;
-}
-
-@media (max-width: 1024px) {
-    .control-group {
-        width: 100%;
-    }
 }
 
 label {
