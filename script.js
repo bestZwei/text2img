@@ -72,6 +72,9 @@ document.getElementById('generate-btn').addEventListener('click', function() {
         canvas.style.width = '';
         canvas.style.height = '';
     }
+
+    // 添加提示文本
+    canvas.title = '点击查看原始大小';
 });
 
 document.getElementById('upload-btn').addEventListener('click', function() {
@@ -217,6 +220,23 @@ function addSettingsListeners() {
 document.addEventListener('DOMContentLoaded', function() {
     loadSettings();
     addSettingsListeners();
+    createModal();
+    
+    // 为预览canvas添加点击事件
+    const previewCanvas = document.getElementById('canvas');
+    previewCanvas.addEventListener('click', function() {
+        const modal = document.querySelector('.modal');
+        const modalCanvas = document.getElementById('modal-canvas');
+        
+        // 复制原始canvas内容到模态框canvas
+        modalCanvas.width = this.width;
+        modalCanvas.height = this.height;
+        const ctx = modalCanvas.getContext('2d');
+        ctx.drawImage(this, 0, 0);
+        
+        // 显示模态框
+        modal.style.display = 'block';
+    });
 });
 
 function handleError(error, message) {
@@ -278,3 +298,29 @@ document.fonts.ready.then(() => {
     // 字体加载完成后再生成图片
     document.getElementById('generate-btn').click();
 });
+
+// 添加模态框HTML
+function createModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <canvas id="modal-canvas"></canvas>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // 点击模态框背景关闭
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // ESC键关闭
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            modal.style.display = 'none';
+        }
+    });
+}
