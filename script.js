@@ -8,101 +8,86 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const fontSize = parseInt(document.getElementById('font-size').value, 10);
     const fontFamily = document.getElementById('font-family').value;
     const color = document.getElementById('color').value;
-    const bgColorStart = document.getElementById('bg-color-start').value;
-    const bgColorEnd = document.getElementById('bg-color-end').value;
-    const gradientAngle = parseInt(document.getElementById('gradient-angle').value, 10);
-    const bgOpacity = document.getElementById('bg-opacity').value / 100;
-    const padding = parseInt(document.getElementById('padding').value, 10);
-    const squareImg = document.getElementById('square-img').checked;
-
+    const lineSpacing = parseFloat(document.getElementById('line-spacing').value);
+    
+    // 修改行高计算
+    const lineHeight = fontSize * lineSpacing;
+    
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
-
+    
     context.font = `${fontSize}px ${fontFamily}`;
-
+    
     const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
-
+    
     const scaleFactor = 10;
-    const lineHeight = fontSize * 1.2;
-
+    
     let canvasWidth = (maxLineWidth + 2 * padding) * scaleFactor;
+    // 使用新的行高计算画布高度
     let canvasHeight = (lines.length * lineHeight + 2 * padding) * scaleFactor;
-
+    
     if (squareImg) {
         const maxSize = Math.max(canvasWidth, canvasHeight);
         canvasWidth = maxSize;
         canvasHeight = maxSize;
     }
-
+    
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-
+    
     context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (backgroundImage) {
+    
+    // 优化渐变效果
+    if (!backgroundImage) {
+        const bgColorStart = document.getElementById('bg-color-start').value;
+        const bgColorEnd = document.getElementById('bg-color-end').value;
+        const gradientAngle = parseInt(document.getElementById('gradient-angle').value, 10);
         const bgOpacity = document.getElementById('bg-opacity').value / 100;
-        const fitMode = document.getElementById('bg-fit').value;
         
-        // 保存当前上下文状态
-        context.save();
+        // 计算渐变的起点和终点
+        const angleInRad = (gradientAngle - 90) * Math.PI / 180;
+        const canvasWidthScaled = canvas.width / scaleFactor;
+        const canvasHeightScaled = canvas.height / scaleFactor;
+        const diagonal = Math.sqrt(canvasWidthScaled * canvasWidthScaled + canvasHeightScaled * canvasHeightScaled);
         
-        // 设置全局透明度
-        context.globalAlpha = bgOpacity;
+        // 使用对角线长度来确保渐变覆盖整个画布
+        const centerX = canvasWidthScaled / 2;
+        const centerY = canvasHeightScaled / 2;
+        const startX = centerX - Math.cos(angleInRad) * diagonal;
+        const startY = centerY - Math.sin(angleInRad) * diagonal;
+        const endX = centerX + Math.cos(angleInRad) * diagonal;
+        const endY = centerY + Math.sin(angleInRad) * diagonal;
         
-        // 根据适配模式绘制背景
-        const canvasWidth = canvas.width / scaleFactor;
-        const canvasHeight = canvas.height / scaleFactor;
+        const gradient = context.createLinearGradient(startX, startY, endX, endY);
         
-        switch (fitMode) {
-            case 'cover':
-                drawImageCover(context, backgroundImage, 0, 0, canvasWidth, canvasHeight);
-                break;
-            case 'contain':
-                drawImageContain(context, backgroundImage, 0, 0, canvasWidth, canvasHeight);
-                break;
-            case 'stretch':
-                context.drawImage(backgroundImage, 0, 0, canvasWidth, canvasHeight);
-                break;
-            case 'tile':
-                drawImageTile(context, backgroundImage, canvasWidth, canvasHeight);
-                break;
-        }
-        
-        // 恢复上下文状态
-        context.restore();
-    } else {
-        const gradient = context.createLinearGradient(
-            canvas.width/2 - Math.cos((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
-            canvas.height/2 - Math.sin((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
-            canvas.width/2 + Math.cos((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
-            canvas.height/2 + Math.sin((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2
-        );
-
-        const startColor = addAlphaToColor(bgColorStart, bgOpacity);
-        const endColor = addAlphaToColor(bgColorEnd, bgOpacity);
-        
-        gradient.addColorStop(0, startColor);
-        gradient.addColorStop(1, endColor);
+        // 添加多个色标以增强渐变效果
+        gradient.addColorStop(0, addAlphaToColor(bgColorStart, bgOpacity));
+        gradient.addColorStop(0.5, mixColors(bgColorStart, bgColorEnd, 0.5, bgOpacity));
+        gradient.addColorStop(1, addAlphaToColor(bgColorEnd, bgOpacity));
         
         context.fillStyle = gradient;
-        context.fillRect(0, 0, canvas.width/scaleFactor, canvas.height/scaleFactor);
+        context.fillRect(0, 0, canvasWidthScaled, canvasHeightScaled);
     }
-
+    
+    // 绘制文本时使用新的行高
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
     context.textBaseline = 'top';
-
+    
     let yOffset = padding;
     if (squareImg) {
         yOffset = (canvasHeight / scaleFactor - lines.length * lineHeight) / 2;
     }
-
+    
     lines.forEach((line, index) => {
-        const xOffset = squareImg ? (canvasWidth / scaleFactor - context.measureText(line).width) / 2 : padding;
+        const xOffset = squareImg ? 
+            (canvasWidth / scaleFactor - context.measureText(line).width) / 2 : 
+            padding;
+        // 使用新的行高计算每行的y位置
         context.fillText(line, xOffset, yOffset + index * lineHeight);
     });
-
+    
     // 在生成图片后添加缩放逻辑
     const previewArea = document.querySelector('.preview-area');
     const previewWidth = previewArea.clientWidth;
@@ -533,4 +518,21 @@ function drawImageTile(ctx, img, width, height) {
     const pattern = ctx.createPattern(img, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, width, height);
+}
+
+// 添加颜色混合函数
+function mixColors(color1, color2, ratio, alpha) {
+    const r1 = parseInt(color1.slice(1,3), 16);
+    const g1 = parseInt(color1.slice(3,5), 16);
+    const b1 = parseInt(color1.slice(5,7), 16);
+    
+    const r2 = parseInt(color2.slice(1,3), 16);
+    const g2 = parseInt(color2.slice(3,5), 16);
+    const b2 = parseInt(color2.slice(5,7), 16);
+    
+    const r = Math.round(r1 * (1 - ratio) + r2 * ratio);
+    const g = Math.round(g1 * (1 - ratio) + g2 * ratio);
+    const b = Math.round(b1 * (1 - ratio) + b2 * ratio);
+    
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
