@@ -281,14 +281,16 @@ footer a:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    max-width: 90%;
-    max-height: 90vh;
+    width: 800px;
+    max-width: 90vw;
 }
 
 .modal-content canvas {
     background-color: white;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     cursor: default;
+    width: 100%;
+    height: auto;
 }
 
 #preview-canvas {

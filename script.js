@@ -222,11 +222,11 @@ document.addEventListener('DOMContentLoaded', function() {
     addSettingsListeners();
     createModal();
     
-    // 为预览canvas添加点击事件
     const previewCanvas = document.getElementById('canvas');
     previewCanvas.addEventListener('click', function() {
         const modal = document.querySelector('.modal');
         const modalCanvas = document.getElementById('modal-canvas');
+        const modalContent = document.querySelector('.modal-content');
         
         // 复制原始canvas内容到模态框canvas
         modalCanvas.width = this.width;
@@ -234,7 +234,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const ctx = modalCanvas.getContext('2d');
         ctx.drawImage(this, 0, 0);
         
-        // 显示模态框
+        // 如果原始宽度小于模态框宽度，则使用原始宽度
+        if (this.width < 800) {
+            modalContent.style.width = this.width + 'px';
+        } else {
+            modalContent.style.width = '800px';
+        }
+        
         modal.style.display = 'block';
     });
 });
