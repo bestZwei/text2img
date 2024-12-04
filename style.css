@@ -437,3 +437,21 @@ input[type="file"] {
 .control-group:nth-child(odd) {
     margin-right: 4px;
 }
+
+.input-with-unit {
+    position: relative;
+}
+
+.input-with-unit input[type="number"] {
+    padding-right: 20px; /* 为百分号预留空间 */
+}
+
+.input-with-unit::after {
+    content: '%';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #555;
+}
