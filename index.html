@@ -100,6 +100,10 @@
                     <input type="color" id="color" value="#000000">
                 </div>
                 <div class="control-group">
+                    <label for="line-spacing">行间距:</label>
+                    <input type="number" id="line-spacing" value="1.2" step="0.1" min="0.5" max="3">
+                </div>
+                <div class="control-group">
                     <label for="bg-color-start">底色渐变起始:</label>
                     <input type="color" id="bg-color-start" value="#ffffff">
                 </div>
@@ -113,28 +117,23 @@
                 </div>
                 <div class="control-group">
                     <label for="bg-opacity">背景透明度:</label>
-                    <input type="range" id="bg-opacity" min="0" max="100" value="100">
-                    <span id="opacity-value">100%</span>
-                </div>
-                <div class="control-group">
-                    <label for="square-img">正方形图:</label>
-                    <input type="checkbox" id="square-img">
+                    <input type="number" id="bg-opacity" value="100" min="0" max="100">%
                 </div>
                 <div class="control-group">
                     <label for="padding">边距:</label>
                     <input type="number" id="padding" value="1">
                 </div>
                 <div class="control-group">
-                    <label for="filename">文件名:</label>
-                    <input type="text" id="filename" value="text2img">
-                </div>
-                <div class="control-group">
                     <label for="max-chars-per-line">每行最大字符数:</label>
                     <input type="number" id="max-chars-per-line" value="50">
                 </div>
                 <div class="control-group">
-                    <label for="line-spacing">行间距:</label>
-                    <input type="number" id="line-spacing" value="1.2" step="0.1" min="0.5" max="3">
+                    <label for="square-img">正方形图:</label>
+                    <input type="checkbox" id="square-img">
+                </div>
+                <div class="control-group">
+                    <label for="filename">文件名:</label>
+                    <input type="text" id="filename" value="text2img">
                 </div>
                 <div class="control-group">
                     <label for="bg-image">背景图片:</label>
@@ -182,3 +181,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
