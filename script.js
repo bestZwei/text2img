@@ -313,20 +313,84 @@ function createModal() {
         <div class="modal-content">
             <canvas id="modal-canvas"></canvas>
         </div>
+        <button class="modal-close">×</button>
+        <div class="modal-hint">ESC 关闭 | 滚轮缩放 | 双击还原</div>
     `;
     document.body.appendChild(modal);
-    
-    // 点击模态框背景关闭
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
+
+    const closeBtn = modal.querySelector('.modal-close');
+    const modalContent = modal.querySelector('.modal-content');
+    const modalCanvas = modal.querySelector('#modal-canvas');
+    let scale = 1;
+    let originalWidth = 0;
+
+    function showModal() {
+        modal.style.display = 'block';
+        requestAnimationFrame(() => modal.classList.add('show'));
+    }
+
+    function hideModal() {
+        modal.classList.remove('show');
+        setTimeout(() => {
             modal.style.display = 'none';
-        }
+            scale = 1;
+            modalContent.style.width = '800px';
+            modalContent.style.transform = 'translate(-50%, -50%) scale(1)';
+        }, 300);
+    }
+
+    // 关闭按钮事件
+    closeBtn.addEventListener('click', hideModal);
+
+    // 点击背景关闭
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) hideModal();
     });
-    
+
     // ESC键关闭
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            modal.style.display = 'none';
-        }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'block') hideModal();
     });
+
+    // 滚轮缩放
+    modal.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        scale *= delta;
+        scale = Math.min(Math.max(0.5, scale), 3); // 限制缩放范围
+        
+        const newWidth = originalWidth * scale;
+        modalContent.style.width = `${newWidth}px`;
+    });
+
+    // 双击还原
+    modalContent.addEventListener('dblclick', () => {
+        scale = 1;
+        modalContent.style.width = originalWidth > 800 ? '800px' : `${originalWidth}px`;
+    });
+
+    return {
+        show: function(sourceCanvas) {
+            modalCanvas.width = sourceCanvas.width;
+            modalCanvas.height = sourceCanvas.height;
+            const ctx = modalCanvas.getContext('2d');
+            ctx.drawImage(sourceCanvas, 0, 0);
+            
+            originalWidth = sourceCanvas.width;
+            if (originalWidth < 800) {
+                modalContent.style.width = `${originalWidth}px`;
+            }
+            
+            showModal();
+        }
+    };
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = createModal();
+    
+    const previewCanvas = document.getElementById('canvas');
+    previewCanvas.addEventListener('click', function() {
+        modal.show(this);
+    });
+});

@@ -271,28 +271,84 @@ footer a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0);
     z-index: 1000;
+    transition: background-color 0.3s ease;
     cursor: zoom-out;
+}
+
+.modal.show {
+    background-color: rgba(0, 0, 0, 0.85);
 }
 
 .modal-content {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
     width: 800px;
     max-width: 90vw;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.modal.show .modal-content {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
 }
 
 .modal-content canvas {
     background-color: white;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    cursor: default;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
     width: 100%;
     height: auto;
+    display: block;
 }
 
 #preview-canvas {
     cursor: zoom-in;
+    transition: transform 0.2s ease;
+}
+
+#preview-canvas:hover {
+    transform: scale(1.02);
+}
+
+.modal-close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.modal-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.modal.show .modal-hint {
+    opacity: 1;
 }
