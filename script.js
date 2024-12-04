@@ -8,9 +8,11 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     const fontSize = parseInt(document.getElementById('font-size').value, 10);
     const fontFamily = document.getElementById('font-family').value;
     const color = document.getElementById('color').value;
-    const bgColor = document.getElementById('bg-color').value;
+    const bgColorStart = document.getElementById('bg-color-start').value;
+    const bgColorEnd = document.getElementById('bg-color-end').value;
+    const gradientAngle = parseInt(document.getElementById('gradient-angle').value, 10);
+    const bgOpacity = document.getElementById('bg-opacity').value / 100;
     const padding = parseInt(document.getElementById('padding').value, 10);
-    const transparentBg = document.getElementById('transparent-bg').checked;
     const squareImg = document.getElementById('square-img').checked;
 
     const canvas = document.getElementById('canvas');
@@ -38,10 +40,21 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (!transparentBg) {
-        context.fillStyle = bgColor;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-    }
+    const gradient = context.createLinearGradient(
+        canvas.width/2 - Math.cos((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
+        canvas.height/2 - Math.sin((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
+        canvas.width/2 + Math.cos((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2, 
+        canvas.height/2 + Math.sin((gradientAngle - 90) * Math.PI / 180) * Math.max(canvas.width, canvas.height)/2
+    );
+
+    const startColor = addAlphaToColor(bgColorStart, bgOpacity);
+    const endColor = addAlphaToColor(bgColorEnd, bgOpacity);
+    
+    gradient.addColorStop(0, startColor);
+    gradient.addColorStop(1, endColor);
+    
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, canvas.width/scaleFactor, canvas.height/scaleFactor);
 
     context.font = `${fontSize}px ${fontFamily}`;
     context.fillStyle = color;
@@ -178,9 +191,11 @@ function saveSettings() {
         fontSize: document.getElementById('font-size').value,
         fontFamily: document.getElementById('font-family').value,
         color: document.getElementById('color').value,
-        bgColor: document.getElementById('bg-color').value,
+        bgColorStart: document.getElementById('bg-color-start').value,
+        bgColorEnd: document.getElementById('bg-color-end').value,
+        gradientAngle: document.getElementById('gradient-angle').value,
+        bgOpacity: document.getElementById('bg-opacity').value,
         padding: document.getElementById('padding').value,
-        transparentBg: document.getElementById('transparent-bg').checked,
         squareImg: document.getElementById('square-img').checked,
         filename: document.getElementById('filename').value
     };
@@ -195,9 +210,12 @@ function loadSettings() {
         document.getElementById('font-size').value = settings.fontSize;
         document.getElementById('font-family').value = settings.fontFamily;
         document.getElementById('color').value = settings.color;
-        document.getElementById('bg-color').value = settings.bgColor;
+        document.getElementById('bg-color-start').value = settings.bgColorStart || '#ffffff';
+        document.getElementById('bg-color-end').value = settings.bgColorEnd || '#ffffff';
+        document.getElementById('gradient-angle').value = settings.gradientAngle || '0';
+        document.getElementById('bg-opacity').value = settings.bgOpacity || '100';
+        document.getElementById('opacity-value').textContent = (settings.bgOpacity || '100') + '%';
         document.getElementById('padding').value = settings.padding;
-        document.getElementById('transparent-bg').checked = settings.transparentBg;
         document.getElementById('square-img').checked = settings.squareImg;
         document.getElementById('filename').value = settings.filename;
     }
@@ -206,8 +224,8 @@ function loadSettings() {
 // 添加事件监听器来保存设置
 function addSettingsListeners() {
     const settingsElements = [
-        'font-size', 'font-family', 'color', 'bg-color',
-        'padding', 'transparent-bg', 'square-img', 'filename'
+        'font-size', 'font-family', 'color', 'bg-color-start', 'bg-color-end', 'gradient-angle', 'bg-opacity',
+        'padding', 'square-img', 'filename'
     ];
     
     settingsElements.forEach(id => {
@@ -393,4 +411,17 @@ document.addEventListener('DOMContentLoaded', function() {
     previewCanvas.addEventListener('click', function() {
         modal.show(this);
     });
+});
+
+// 添加辅助函数来处理颜色透明度
+function addAlphaToColor(color, alpha) {
+    const r = parseInt(color.slice(1,3), 16);
+    const g = parseInt(color.slice(3,5), 16);
+    const b = parseInt(color.slice(5,7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+// 添加透明度滑块值显示更新
+document.getElementById('bg-opacity').addEventListener('input', function() {
+    document.getElementById('opacity-value').textContent = this.value + '%';
 });

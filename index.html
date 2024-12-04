@@ -58,12 +58,21 @@
                     <input type="color" id="color" value="#000000">
                 </div>
                 <div class="control-group">
-                    <label for="bg-color">图片底色:</label>
-                    <input type="color" id="bg-color" value="#ffffff">
+                    <label for="bg-color-start">底色渐变起始:</label>
+                    <input type="color" id="bg-color-start" value="#ffffff">
                 </div>
                 <div class="control-group">
-                    <label for="transparent-bg">透明底色:</label>
-                    <input type="checkbox" id="transparent-bg">
+                    <label for="bg-color-end">底色渐变结束:</label>
+                    <input type="color" id="bg-color-end" value="#ffffff">
+                </div>
+                <div class="control-group">
+                    <label for="gradient-angle">渐变角度:</label>
+                    <input type="number" id="gradient-angle" value="0" min="0" max="360">
+                </div>
+                <div class="control-group">
+                    <label for="bg-opacity">背景透明度:</label>
+                    <input type="range" id="bg-opacity" min="0" max="100" value="100">
+                    <span id="opacity-value">100%</span>
                 </div>
                 <div class="control-group">
                     <label for="square-img">正方形图:</label>
