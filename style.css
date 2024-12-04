@@ -165,6 +165,15 @@ input:focus {
     box-sizing: border-box;
     margin-bottom: 15px;
     box-shadow: 0 2px 4px var(--shadow-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 .area6 {

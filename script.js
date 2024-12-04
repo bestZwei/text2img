@@ -56,6 +56,22 @@ document.getElementById('generate-btn').addEventListener('click', function() {
         const xOffset = squareImg ? (canvasWidth / scaleFactor - context.measureText(line).width) / 2 : padding;
         context.fillText(line, xOffset, yOffset + index * lineHeight);
     });
+
+    // 在生成图片后添加缩放逻辑
+    const previewArea = document.querySelector('.preview-area');
+    const previewWidth = previewArea.clientWidth;
+    
+    // 计算缩放比例
+    const scale = previewWidth / canvas.width;
+    
+    // 设置canvas的显示尺寸（不改变实际分辨率）
+    if (canvas.width > previewWidth) {
+        canvas.style.width = previewWidth + 'px';
+        canvas.style.height = (canvas.height * scale) + 'px';
+    } else {
+        canvas.style.width = '';
+        canvas.style.height = '';
+    }
 });
 
 document.getElementById('upload-btn').addEventListener('click', function() {
