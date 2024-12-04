@@ -108,7 +108,6 @@ button:active {
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     gap: 8px;
     box-shadow: 0 2px 4px var(--shadow-color);
     max-height: 300px;
@@ -116,6 +115,7 @@ button:active {
     overflow-x: hidden;
     scrollbar-width: thin;
     scrollbar-color: var(--primary-color) var(--background-color);
+    padding-right: 16px;
 }
 
 .area1::-webkit-scrollbar {
@@ -125,6 +125,7 @@ button:active {
 .area1::-webkit-scrollbar-track {
     background: var(--background-color);
     border-radius: 4px;
+    margin: 2px;
 }
 
 .area1::-webkit-scrollbar-thumb {
@@ -137,10 +138,9 @@ button:active {
 }
 
 .control-group {
+    width: calc(50% - 4px - 4px);
     margin-bottom: 8px;
-    text-align: left;
-    width: calc(50% - 4px);
-    min-width: 120px;
+    min-width: 100px;
 }
 
 label {
@@ -148,6 +148,9 @@ label {
     margin-bottom: 3px;
     font-size: 12px;
     color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 input[type="number"],
@@ -159,10 +162,8 @@ input[type="range"] {
     padding: 4px 6px;
     border-radius: 5px;
     border: 1px solid #ccc;
-    font-family: inherit;
     font-size: 12px;
     box-sizing: border-box;
-    transition: box-shadow 0.3s;
 }
 
 input:focus {
@@ -262,6 +263,10 @@ footer a:hover {
     
     .button-group button {
         margin-bottom: 10px;
+    }
+
+    .area1 {
+        padding-right: 10px;
     }
 }
 
@@ -401,4 +406,17 @@ input[type="file"] {
 .control-group:has(#bg-fit),
 .control-group:has(#clear-bg) {
     width: 100%;
+}
+
+/* 特定控制组占据整行 */
+.control-group:has(#bg-image),
+.control-group:has(#bg-fit),
+.control-group:has(#clear-bg),
+.control-group:has(textarea) {
+    width: 100%;
+}
+
+/* 建议的控制组配对顺序 */
+.control-group:nth-child(odd) {
+    margin-right: 4px;
 }

@@ -85,7 +85,9 @@ document.getElementById('generate-btn').addEventListener('click', function() {
         const gradient = context.createLinearGradient(startX, startY, endX, endY);
         
         gradient.addColorStop(0, addAlphaToColor(bgColorStart, bgOpacity));
+        gradient.addColorStop(0.25, mixColors(bgColorStart, bgColorEnd, 0.25, bgOpacity));
         gradient.addColorStop(0.5, mixColors(bgColorStart, bgColorEnd, 0.5, bgOpacity));
+        gradient.addColorStop(0.75, mixColors(bgColorStart, bgColorEnd, 0.75, bgOpacity));
         gradient.addColorStop(1, addAlphaToColor(bgColorEnd, bgOpacity));
         
         context.fillStyle = gradient;
@@ -501,7 +503,18 @@ function drawImageContain(ctx, img, x, y, width, height) {
 }
 
 function drawImageTile(ctx, img, width, height) {
-    const pattern = ctx.createPattern(img, 'repeat');
+    const patternCanvas = document.createElement('canvas');
+    const patternContext = patternCanvas.getContext('2d');
+    
+    // 设置 patternCanvas 的大小为图片大小
+    patternCanvas.width = img.width;
+    patternCanvas.height = img.height;
+    
+    // 在 patternCanvas 上绘制图片
+    patternContext.drawImage(img, 0, 0, img.width, img.height);
+    
+    // 创建平铺模式
+    const pattern = ctx.createPattern(patternCanvas, 'repeat');
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, width, height);
 }

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&family=Long+Cang&family=Liu+Jian+Mao+Cao&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Raleway:wght@400;700&family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Merriweather:wght@400;700&family=Ubuntu:wght@400;700&family=Dancing+Script&family=Pacifico&family=Shadows+Into+Light&family=Indie+Flower&family=Great+Vibes&family=Sacramento&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="main-container">
@@ -23,34 +25,74 @@
                 <div class="control-group">
                     <label for="font-family">字体:</label>
                     <select id="font-family">
-                        <option value="SimSun">宋体</option>
-                        <option value="SimHei">黑体</option>
-                        <option value="Microsoft YaHei">微软雅黑</option>
-                        <option value="KaiTi">楷体</option>
-                        <option value="FangSong">仿宋</option>
-                        <option value="NSimSun">新宋体</option>
-                        <option value="PMingLiU">新细明体</option>
-                        <option value="DFKai-SB">标楷体</option>
-                        <option value="LiSu">隶书</option>
-                        <option value="YouYuan">幼圆</option>
-                        <option value="Noto Sans SC">Noto Sans SC</option>
-                        <option value="Noto Serif SC">Noto Serif SC</option>
-                        <option value="Arial">Arial</option>
-                        <option value="Courier New">Courier New</option>
-                        <option value="Georgia">Georgia</option>
-                        <option value="Times New Roman">Times New Roman</option>
-                        <option value="Verdana">Verdana</option>
-                        <option value="Roboto">Roboto</option>
-                        <option value="Open Sans">Open Sans</option>
-                        <option value="Lobster">Lobster</option>
-                        <option value="Shadows Into Light">Shadows Into Light</option>
-                        <option value="Pacifico">Pacifico</option>
-                        <option value="Raleway">Raleway</option>
-                        <option value="Montserrat">Montserrat</option>
-                        <option value="Lato">Lato</option>
-                        <option value="Oswald">Oswald</option>
-                        <option value="Ubuntu">Ubuntu</option>
-                        <option value="Playfair Display">Playfair Display</option>
+                        <!-- 中文字体 -->
+                        <optgroup label="中文字体">
+                            <option value="SimSun">宋体</option>
+                            <option value="SimHei">黑体</option>
+                            <option value="Microsoft YaHei">微软雅黑</option>
+                            <option value="KaiTi">楷体</option>
+                            <option value="FangSong">仿宋</option>
+                            <option value="NSimSun">新宋体</option>
+                            <option value="PMingLiU">新细明体</option>
+                            <option value="DFKai-SB">标楷体</option>
+                            <option value="LiSu">隶书</option>
+                            <option value="YouYuan">幼圆</option>
+                            <option value="STXihei">华文细黑</option>
+                            <option value="STKaiti">华文楷体</option>
+                            <option value="STSong">华文宋体</option>
+                            <option value="STZhongsong">华文中宋</option>
+                            <option value="STFangsong">华文仿宋</option>
+                            <option value="FZShuTi">方正舒体</option>
+                            <option value="FZYaoti">方正姚体</option>
+                        </optgroup>
+
+                        <!-- Google Fonts 中文 -->
+                        <optgroup label="Google中文字体">
+                            <option value="'Noto Sans SC', sans-serif">Noto Sans SC</option>
+                            <option value="'Noto Serif SC', serif">Noto Serif SC</option>
+                            <option value="'Ma Shan Zheng', cursive">马善政书法</option>
+                            <option value="'Zhi Mang Xing', cursive">智慧体</option>
+                            <option value="'ZCOOL XiaoWei', serif">站酷小薇</option>
+                            <option value="'ZCOOL QingKe HuangYou', cursive">站酷庆科黄油体</option>
+                            <option value="'ZCOOL KuaiLe', cursive">站酷快乐体</option>
+                            <option value="'Long Cang', cursive">龙藏体</option>
+                            <option value="'Liu Jian Mao Cao', cursive">柳建毛草</option>
+                        </optgroup>
+
+                        <!-- 英文字体 -->
+                        <optgroup label="英文字体">
+                            <option value="Arial">Arial</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="'Times New Roman'">Times New Roman</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="'Courier New'">Courier New</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Impact">Impact</option>
+                            <option value="'Arial Black'">Arial Black</option>
+                            <option value="'Trebuchet MS'">Trebuchet MS</option>
+                            <option value="'Palatino Linotype'">Palatino Linotype</option>
+                            <option value="Tahoma">Tahoma</option>
+                            <option value="'Century Gothic'">Century Gothic</option>
+                        </optgroup>
+
+                        <!-- Google Fonts 英文 -->
+                        <optgroup label="Google英文字体">
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                            <option value="'Lato', sans-serif">Lato</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Raleway', sans-serif">Raleway</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+                            <option value="'Merriweather', serif">Merriweather</option>
+                            <option value="'Ubuntu', sans-serif">Ubuntu</option>
+                            <option value="'Dancing Script', cursive">Dancing Script</option>
+                            <option value="'Pacifico', cursive">Pacifico</option>
+                            <option value="'Shadows Into Light', cursive">Shadows Into Light</option>
+                            <option value="'Indie Flower', cursive">Indie Flower</option>
+                            <option value="'Great Vibes', cursive">Great Vibes</option>
+                            <option value="'Sacramento', cursive">Sacramento</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="control-group">
