@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text2Img — 文字转图片</title>
-    <meta name="description" content="将文字转换为高清晰度图片，支持自定义字体、颜色、渐变背景与图床上传。">
+    <meta name="description" content="将文字转换为高清晰度图片，支持自定义字体、颜色、渐变背景、多种导出格式与图床上传。">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -25,7 +25,7 @@
 
     <main class="main-container">
         <h1 class="page-title">文字转图片</h1>
-        <p class="page-subtitle">输入文本，实时预览并生成高清图片，一键上传图床。</p>
+        <p class="page-subtitle">输入文本，实时预览并生成高清图片。可拖拽图片/文本文件到对应区域。</p>
 
         <div class="workspace">
             <!-- 左侧：输入与设置 -->
@@ -34,155 +34,209 @@
                     <h2>输入与设置</h2>
                 </div>
                 <div class="card-body">
-                    <div class="control-group wide" style="margin-bottom:16px;">
-                        <textarea id="text-input" placeholder="在这里输入要转换的文本…"></textarea>
+                    <div class="control-group wide text-input-wrap" style="margin-bottom:16px;">
+                        <textarea id="text-input" placeholder="在这里输入要转换的文本…（可拖入 .txt 文件）"></textarea>
                     </div>
 
                     <div class="actions" style="margin-bottom:20px;">
-                        <button id="generate-btn" class="btn btn-primary">生成图片</button>
+                        <button id="generate-btn" class="btn btn-primary">生成图片 <span class="kbd">Ctrl+Enter</span></button>
                     </div>
 
-                    <div class="controls-grid">
-                        <div class="control-group">
-                            <label for="font-size">文字大小 (px)</label>
-                            <input type="number" id="font-size" value="4" min="1" max="200">
-                        </div>
-                        <div class="control-group">
-                            <label for="line-spacing">行间距</label>
-                            <input type="number" id="line-spacing" value="1.2" step="0.1" min="0.5" max="3">
-                        </div>
-                        <div class="control-group">
-                            <label for="font-family">字体</label>
-                            <select id="font-family">
-                                <!-- 中文字体 -->
-                                <optgroup label="中文字体">
-                                    <option value="SimSun">宋体</option>
-                                    <option value="SimHei">黑体</option>
-                                    <option value="Microsoft YaHei">微软雅黑</option>
-                                    <option value="KaiTi">楷体</option>
-                                    <option value="FangSong">仿宋</option>
-                                    <option value="NSimSun">新宋体</option>
-                                    <option value="PMingLiU">新细明体</option>
-                                    <option value="DFKai-SB">标楷体</option>
-                                    <option value="LiSu">隶书</option>
-                                    <option value="YouYuan">幼圆</option>
-                                    <option value="STXihei">华文细黑</option>
-                                    <option value="STKaiti">华文楷体</option>
-                                    <option value="STSong">华文宋体</option>
-                                    <option value="STZhongsong">华文中宋</option>
-                                    <option value="STFangsong">华文仿宋</option>
-                                    <option value="FZShuTi">方正舒体</option>
-                                    <option value="FZYaoti">方正姚体</option>
-                                </optgroup>
+                    <!-- 文本设置 -->
+                    <details class="settings-section" open>
+                        <summary>文本</summary>
+                        <div class="settings-body controls-grid">
+                            <div class="control-group">
+                                <label for="font-size">文字大小</label>
+                                <input type="number" id="font-size" value="4" min="1" max="200">
+                                <span class="field-hint" id="font-size-hint"></span>
+                            </div>
+                            <div class="control-group">
+                                <label for="line-spacing">行间距</label>
+                                <input type="number" id="line-spacing" value="1.2" step="0.1" min="0.5" max="3">
+                            </div>
+                            <div class="control-group wide">
+                                <label for="font-family">字体</label>
+                                <select id="font-family">
+                                    <!-- 中文字体 -->
+                                    <optgroup label="中文字体">
+                                        <option value="SimSun">宋体</option>
+                                        <option value="SimHei">黑体</option>
+                                        <option value="Microsoft YaHei">微软雅黑</option>
+                                        <option value="KaiTi">楷体</option>
+                                        <option value="FangSong">仿宋</option>
+                                        <option value="NSimSun">新宋体</option>
+                                        <option value="PMingLiU">新细明体</option>
+                                        <option value="DFKai-SB">标楷体</option>
+                                        <option value="LiSu">隶书</option>
+                                        <option value="YouYuan">幼圆</option>
+                                        <option value="STXihei">华文细黑</option>
+                                        <option value="STKaiti">华文楷体</option>
+                                        <option value="STSong">华文宋体</option>
+                                        <option value="STZhongsong">华文中宋</option>
+                                        <option value="STFangsong">华文仿宋</option>
+                                        <option value="FZShuTi">方正舒体</option>
+                                        <option value="FZYaoti">方正姚体</option>
+                                    </optgroup>
 
-                                <!-- Google Fonts 中文 -->
-                                <optgroup label="Google中文字体">
-                                    <option value="'Noto Sans SC', sans-serif">Noto Sans SC</option>
-                                    <option value="'Noto Serif SC', serif">Noto Serif SC</option>
-                                    <option value="'Ma Shan Zheng', cursive">马善政书法</option>
-                                    <option value="'Zhi Mang Xing', cursive">智慧体</option>
-                                    <option value="'ZCOOL XiaoWei', serif">站酷小薇</option>
-                                    <option value="'ZCOOL QingKe HuangYou', cursive">站酷庆科黄油体</option>
-                                    <option value="'ZCOOL KuaiLe', cursive">站酷快乐体</option>
-                                    <option value="'Long Cang', cursive">龙藏体</option>
-                                    <option value="'Liu Jian Mao Cao', cursive">柳建毛草</option>
-                                </optgroup>
+                                    <!-- Google Fonts 中文 -->
+                                    <optgroup label="Google中文字体">
+                                        <option value="'Noto Sans SC', sans-serif">Noto Sans SC</option>
+                                        <option value="'Noto Serif SC', serif">Noto Serif SC</option>
+                                        <option value="'Ma Shan Zheng', cursive">马善政书法</option>
+                                        <option value="'Zhi Mang Xing', cursive">智慧体</option>
+                                        <option value="'ZCOOL XiaoWei', serif">站酷小薇</option>
+                                        <option value="'ZCOOL QingKe HuangYou', cursive">站酷庆科黄油体</option>
+                                        <option value="'ZCOOL KuaiLe', cursive">站酷快乐体</option>
+                                        <option value="'Long Cang', cursive">龙藏体</option>
+                                        <option value="'Liu Jian Mao Cao', cursive">柳建毛草</option>
+                                    </optgroup>
 
-                                <!-- 英文字体 -->
-                                <optgroup label="英文字体">
-                                    <option value="Arial">Arial</option>
-                                    <option value="Helvetica">Helvetica</option>
-                                    <option value="'Times New Roman'">Times New Roman</option>
-                                    <option value="Georgia">Georgia</option>
-                                    <option value="'Courier New'">Courier New</option>
-                                    <option value="Verdana">Verdana</option>
-                                    <option value="Impact">Impact</option>
-                                    <option value="'Arial Black'">Arial Black</option>
-                                    <option value="'Trebuchet MS'">Trebuchet MS</option>
-                                    <option value="'Palatino Linotype'">Palatino Linotype</option>
-                                    <option value="Tahoma">Tahoma</option>
-                                    <option value="'Century Gothic'">Century Gothic</option>
-                                </optgroup>
+                                    <!-- 英文字体 -->
+                                    <optgroup label="英文字体">
+                                        <option value="Arial">Arial</option>
+                                        <option value="Helvetica">Helvetica</option>
+                                        <option value="'Times New Roman'">Times New Roman</option>
+                                        <option value="Georgia">Georgia</option>
+                                        <option value="'Courier New'">Courier New</option>
+                                        <option value="Verdana">Verdana</option>
+                                        <option value="Impact">Impact</option>
+                                        <option value="'Arial Black'">Arial Black</option>
+                                        <option value="'Trebuchet MS'">Trebuchet MS</option>
+                                        <option value="'Palatino Linotype'">Palatino Linotype</option>
+                                        <option value="Tahoma">Tahoma</option>
+                                        <option value="'Century Gothic'">Century Gothic</option>
+                                    </optgroup>
 
-                                <!-- Google Fonts 英文 -->
-                                <optgroup label="Google英文字体">
-                                    <option value="'Roboto', sans-serif">Roboto</option>
-                                    <option value="'Open Sans', sans-serif">Open Sans</option>
-                                    <option value="'Lato', sans-serif">Lato</option>
-                                    <option value="'Montserrat', sans-serif">Montserrat</option>
-                                    <option value="'Raleway', sans-serif">Raleway</option>
-                                    <option value="'Playfair Display', serif">Playfair Display</option>
-                                    <option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
-                                    <option value="'Merriweather', serif">Merriweather</option>
-                                    <option value="'Ubuntu', sans-serif">Ubuntu</option>
-                                    <option value="'Dancing Script', cursive">Dancing Script</option>
-                                    <option value="'Pacifico', cursive">Pacifico</option>
-                                    <option value="'Shadows Into Light', cursive">Shadows Into Light</option>
-                                    <option value="'Indie Flower', cursive">Indie Flower</option>
-                                    <option value="'Great Vibes', cursive">Great Vibes</option>
-                                    <option value="'Sacramento', cursive">Sacramento</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label for="color">文字颜色</label>
-                            <input type="color" id="color" value="#000000">
-                        </div>
-                        <div class="control-group">
-                            <label for="bg-color-start">渐变起始色</label>
-                            <input type="color" id="bg-color-start" value="#ffffff">
-                        </div>
-                        <div class="control-group">
-                            <label for="bg-color-end">渐变结束色</label>
-                            <input type="color" id="bg-color-end" value="#ffffff">
-                        </div>
-                        <div class="control-group">
-                            <label for="gradient-angle">渐变角度 (°)</label>
-                            <input type="number" id="gradient-angle" value="0" min="0" max="360">
-                        </div>
-                        <div class="control-group">
-                            <label for="bg-opacity">背景透明度</label>
-                            <div class="input-with-unit">
-                                <input type="number" id="bg-opacity" value="100" min="0" max="100">
+                                    <!-- Google Fonts 英文 -->
+                                    <optgroup label="Google英文字体">
+                                        <option value="'Roboto', sans-serif">Roboto</option>
+                                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                                        <option value="'Lato', sans-serif">Lato</option>
+                                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                                        <option value="'Raleway', sans-serif">Raleway</option>
+                                        <option value="'Playfair Display', serif">Playfair Display</option>
+                                        <option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+                                        <option value="'Merriweather', serif">Merriweather</option>
+                                        <option value="'Ubuntu', sans-serif">Ubuntu</option>
+                                        <option value="'Dancing Script', cursive">Dancing Script</option>
+                                        <option value="'Pacifico', cursive">Pacifico</option>
+                                        <option value="'Shadows Into Light', cursive">Shadows Into Light</option>
+                                        <option value="'Indie Flower', cursive">Indie Flower</option>
+                                        <option value="'Great Vibes', cursive">Great Vibes</option>
+                                        <option value="'Sacramento', cursive">Sacramento</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="color">文字颜色</label>
+                                <input type="color" id="color" value="#000000">
+                            </div>
+                            <div class="control-group">
+                                <label for="text-align">对齐方式</label>
+                                <select id="text-align">
+                                    <option value="left">左对齐</option>
+                                    <option value="center" selected>居中</option>
+                                    <option value="right">右对齐</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="max-chars-per-line">每行最大字符数</label>
+                                <input type="number" id="max-chars-per-line" value="50" min="1" max="500">
+                            </div>
+                            <div class="control-group">
+                                <label for="padding">边距</label>
+                                <input type="number" id="padding" value="1" min="0" max="100">
+                            </div>
+                            <div class="control-group">
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="square-img">
+                                    <label for="square-img">正方形图片</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label for="padding">边距</label>
-                            <input type="number" id="padding" value="1" min="0" max="100">
-                        </div>
-                        <div class="control-group">
-                            <label for="max-chars-per-line">每行最大字符数</label>
-                            <input type="number" id="max-chars-per-line" value="50" min="1" max="500">
-                        </div>
-                        <div class="control-group">
-                            <label for="filename">文件名</label>
-                            <input type="text" id="filename" value="text2img">
-                        </div>
-                        <div class="control-group">
-                            <div class="checkbox-row">
-                                <input type="checkbox" id="square-img">
-                                <label for="square-img">正方形图片</label>
+                    </details>
+
+                    <!-- 背景设置 -->
+                    <details class="settings-section">
+                        <summary>背景</summary>
+                        <div class="settings-body controls-grid">
+                            <div class="control-group wide">
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="transparent-bg">
+                                    <label for="transparent-bg">透明背景（导出 PNG 时生效）</label>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="bg-color-start">渐变起始色</label>
+                                <input type="color" id="bg-color-start" value="#ffffff">
+                            </div>
+                            <div class="control-group">
+                                <label for="bg-color-end">渐变结束色</label>
+                                <input type="color" id="bg-color-end" value="#ffffff">
+                            </div>
+                            <div class="control-group">
+                                <label for="gradient-angle">渐变角度 (°)</label>
+                                <input type="number" id="gradient-angle" value="0" min="0" max="360">
+                            </div>
+                            <div class="control-group">
+                                <label for="bg-opacity">背景透明度</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="bg-opacity" value="100" min="0" max="100">
+                                </div>
+                            </div>
+                            <div class="control-group wide">
+                                <label for="bg-image">背景图片（也可拖拽到预览区）</label>
+                                <input type="file" id="bg-image" accept="image/*">
+                            </div>
+                            <div class="control-group">
+                                <label for="bg-fit">背景适配</label>
+                                <select id="bg-fit">
+                                    <option value="cover">填充 (cover)</option>
+                                    <option value="contain">适应 (contain)</option>
+                                    <option value="stretch">拉伸 (stretch)</option>
+                                    <option value="tile">平铺 (tile)</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label style="visibility:hidden;">操作</label>
+                                <button id="clear-bg" class="btn btn-secondary btn-sm btn-block">清除背景图</button>
                             </div>
                         </div>
+                    </details>
 
-                        <div class="control-group wide">
-                            <label for="bg-image">背景图片</label>
-                            <input type="file" id="bg-image" accept="image/*">
+                    <!-- 导出设置 -->
+                    <details class="settings-section">
+                        <summary>导出</summary>
+                        <div class="settings-body controls-grid">
+                            <div class="control-group">
+                                <label for="filename">文件名</label>
+                                <input type="text" id="filename" value="text2img">
+                            </div>
+                            <div class="control-group">
+                                <label for="export-format">图片格式</label>
+                                <select id="export-format">
+                                    <option value="png">PNG（无损）</option>
+                                    <option value="jpeg">JPEG（有损）</option>
+                                    <option value="webp">WebP</option>
+                                </select>
+                            </div>
+                            <div class="control-group" id="quality-group">
+                                <label for="export-quality">质量</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="export-quality" value="90" min="10" max="100" step="5">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="export-scale">导出倍率</label>
+                                <select id="export-scale">
+                                    <option value="1">1x（当前尺寸）</option>
+                                    <option value="2" selected>2x（高清）</option>
+                                    <option value="3">3x（超清）</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="control-group">
-                            <label for="bg-fit">背景适配</label>
-                            <select id="bg-fit">
-                                <option value="cover">填充 (cover)</option>
-                                <option value="contain">适应 (contain)</option>
-                                <option value="stretch">拉伸 (stretch)</option>
-                                <option value="tile">平铺 (tile)</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label style="visibility:hidden;">操作</label>
-                            <button id="clear-bg" class="btn btn-secondary btn-sm btn-block">清除背景图</button>
-                        </div>
-                    </div>
+                    </details>
                 </div>
             </section>
 
@@ -192,8 +246,18 @@
                     <h2>预览</h2>
                 </div>
                 <div class="card-body">
-                    <div class="preview-area">
+                    <div class="preview-area" id="preview-area">
                         <canvas id="canvas" title="点击查看原始大小"></canvas>
+                        <div class="preview-drop-hint" id="preview-drop-hint">拖拽图片到这里设为背景</div>
+                    </div>
+
+                    <div class="preview-toolbar">
+                        <div class="zoom-group" role="group" aria-label="预览缩放">
+                            <button class="zoom-btn active" data-zoom="fit">适应</button>
+                            <button class="zoom-btn" data-zoom="1">100%</button>
+                            <button class="zoom-btn" data-zoom="2">200%</button>
+                        </div>
+                        <span class="output-info" id="output-info"></span>
                     </div>
 
                     <div class="actions" style="margin-top:16px;margin-bottom:20px;">
@@ -201,17 +265,17 @@
                         <button id="download-btn" class="btn btn-primary">下载图片</button>
                     </div>
 
-                    <div class="card-header" style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-                        <h2 style="text-transform:none;letter-spacing:0;font-size:12px;">输出链接（点击复制）</h2>
-                    </div>
-                    <div class="link-group">
-                        <input type="text" id="link" placeholder="图片链接" readonly onclick="copyToClipboard('link')">
-                    </div>
-                    <div class="link-group">
-                        <input type="text" id="markdown-link" placeholder="Markdown 格式链接" readonly onclick="copyToClipboard('markdown-link')">
-                    </div>
-                    <div class="link-group">
-                        <input type="text" id="html-link" placeholder="HTML 格式链接" readonly onclick="copyToClipboard('html-link')">
+                    <div class="link-box">
+                        <span class="link-box-title">输出链接（点击复制）</span>
+                        <div class="link-group">
+                            <input type="text" id="link" placeholder="图片链接" readonly onclick="copyToClipboard('link')">
+                        </div>
+                        <div class="link-group">
+                            <input type="text" id="markdown-link" placeholder="Markdown 格式链接" readonly onclick="copyToClipboard('markdown-link')">
+                        </div>
+                        <div class="link-group">
+                            <input type="text" id="html-link" placeholder="HTML 格式链接" readonly onclick="copyToClipboard('html-link')">
+                        </div>
                     </div>
                 </div>
             </section>

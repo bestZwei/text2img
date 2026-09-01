@@ -623,6 +623,173 @@ input[type="file"]::file-selector-button:hover {
     background: #a3a3a3;
 }
 
+/* ============ 设置分组（details/summary） ============ */
+.settings-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.settings-section summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background-color 0.15s ease;
+}
+
+.settings-section summary::-webkit-details-marker {
+    display: none;
+}
+
+.settings-section summary::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-right: 1.5px solid var(--muted);
+    border-bottom: 1.5px solid var(--muted);
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+}
+
+.settings-section[open] summary::after {
+    transform: rotate(-135deg);
+}
+
+.settings-section summary:hover {
+    background: var(--background-subtle);
+}
+
+.settings-section[open] summary {
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+}
+
+.settings-body {
+    padding: 14px;
+}
+
+/* 字段小提示 */
+.field-hint {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    white-space: nowrap;
+}
+
+/* 快捷键提示 */
+.kbd {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    background: rgb(255 255 255 / 0.18);
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: 4px;
+    font-weight: 400;
+}
+
+/* ============ 预览工具栏 ============ */
+.preview-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.zoom-group {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.zoom-btn {
+    padding: 5px 12px;
+    font-size: 12px;
+    border: none;
+    background: var(--background);
+    color: var(--muted-foreground);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+}
+
+.zoom-btn + .zoom-btn {
+    border-left: 1px solid var(--border);
+}
+
+.zoom-btn:hover {
+    background: var(--background-subtle);
+    color: var(--foreground);
+}
+
+.zoom-btn.active {
+    background: var(--foreground);
+    color: var(--background);
+}
+
+.output-info {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+}
+
+/* ============ 输出链接框 ============ */
+.link-box {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+}
+
+.link-box-title {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    margin-bottom: 10px;
+}
+
+/* ============ 拖拽高亮 ============ */
+.text-input-wrap.dragover,
+#preview-area.dragover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgb(0 112 243 / 0.15);
+}
+
+.text-input-wrap.dragover textarea {
+    border-color: var(--accent);
+}
+
+.preview-drop-hint {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+#preview-area.dragover .preview-drop-hint {
+    display: flex;
+}
+
+#preview-area {
+    position: relative;
+}
+
 /* 暗色模式 */
 @media (prefers-color-scheme: dark) {
     :root {

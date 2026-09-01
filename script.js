@@ -2,47 +2,164 @@
     'use strict';
 
     let backgroundImage = null;
+    let previewZoom = 'fit';
 
-    /* ===================== 图片生成 ===================== */
+    const BASE_SCALE = 10;
 
-    function generateImage() {
-        const text = document.getElementById('text-input').value;
+    /* ===================== 读取设置 ===================== */
 
-        // 空文本保护：避免 Math.max(...[]) 产生 -Infinity 画布
-        if (!text.trim()) {
-            const c = document.getElementById('canvas');
-            c.width = 0;
-            c.height = 0;
-            return;
+    function getVal(id, fallback) {
+        const el = document.getElementById(id);
+        return el ? el.value : fallback;
+    }
+
+    function getChecked(id) {
+        const el = document.getElementById(id);
+        return el ? el.checked : false;
+    }
+
+    /* ===================== 场景绘制（主预览 / 高清导出共用） ===================== */
+
+    function drawScene(targetCanvas, renderScale) {
+        const ctx = targetCanvas.getContext('2d');
+        const sf = BASE_SCALE * renderScale;
+        const lw = targetCanvas.width / sf;
+        const lh = targetCanvas.height / sf;
+
+        const transparentBg = getChecked('transparent-bg');
+
+        ctx.setTransform(sf, 0, 0, sf, 0, 0);
+        ctx.clearRect(0, 0, lw, lh);
+
+        if (backgroundImage) {
+            const bgOpacity = (parseFloat(getVal('bg-opacity', '100')) || 100) / 100;
+            const fitMode = getVal('bg-fit', 'cover');
+
+            ctx.save();
+            ctx.globalAlpha = bgOpacity;
+
+            switch (fitMode) {
+                case 'cover':
+                    drawImageCover(ctx, backgroundImage, 0, 0, lw, lh);
+                    break;
+                case 'contain':
+                    drawImageContain(ctx, backgroundImage, 0, 0, lw, lh);
+                    break;
+                case 'stretch':
+                    ctx.drawImage(backgroundImage, 0, 0, lw, lh);
+                    break;
+                case 'tile':
+                    drawImageTile(ctx, backgroundImage, lw, lh);
+                    break;
+            }
+
+            ctx.restore();
+        } else if (!transparentBg) {
+            const bgColorStart = getVal('bg-color-start', '#ffffff');
+            const bgColorEnd = getVal('bg-color-end', '#ffffff');
+            const gradientAngle = parseInt(getVal('gradient-angle', '0'), 10) || 0;
+            const bgOpacity = (parseFloat(getVal('bg-opacity', '100')) || 100) / 100;
+
+            const angleInRad = (gradientAngle - 90) * Math.PI / 180;
+            const diagonal = Math.sqrt(lw * lw + lh * lh);
+
+            const centerX = lw / 2;
+            const centerY = lh / 2;
+            const startX = centerX - Math.cos(angleInRad) * diagonal;
+            const startY = centerY - Math.sin(angleInRad) * diagonal;
+            const endX = centerX + Math.cos(angleInRad) * diagonal;
+            const endY = centerY + Math.sin(angleInRad) * diagonal;
+
+            const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+
+            gradient.addColorStop(0, addAlphaToColor(bgColorStart, bgOpacity));
+            gradient.addColorStop(0.25, mixColors(bgColorStart, bgColorEnd, 0.25, bgOpacity));
+            gradient.addColorStop(0.5, mixColors(bgColorStart, bgColorEnd, 0.5, bgOpacity));
+            gradient.addColorStop(0.75, mixColors(bgColorStart, bgColorEnd, 0.75, bgOpacity));
+            gradient.addColorStop(1, addAlphaToColor(bgColorEnd, bgOpacity));
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, lw, lh);
         }
 
-        const maxCharsPerLine = Math.max(1, parseInt(document.getElementById('max-chars-per-line').value, 10) || 50);
+        // ---- 文字 ----
+        const text = document.getElementById('text-input').value;
+        const maxCharsPerLine = Math.max(1, parseInt(getVal('max-chars-per-line', '50'), 10) || 50);
         const lines = text.split('\n').map(line => {
             if (line === '') return [''];
             const regex = new RegExp(`.{1,${maxCharsPerLine}}`, 'g');
             return line.match(regex);
         }).flat();
 
-        const fontSize = Math.max(1, parseInt(document.getElementById('font-size').value, 10) || 4);
-        const fontFamily = document.getElementById('font-family').value;
-        const color = document.getElementById('color').value;
-        const lineSpacing = parseFloat(document.getElementById('line-spacing').value) || 1.2;
-        const padding = Math.max(0, parseInt(document.getElementById('padding').value, 10) || 0);
-        const squareImg = document.getElementById('square-img').checked;
+        const fontSize = Math.max(1, parseInt(getVal('font-size', '4'), 10) || 4);
+        const fontFamily = getVal('font-family', 'SimSun');
+        const color = getVal('color', '#000000');
+        const lineSpacing = parseFloat(getVal('line-spacing', '1.2')) || 1.2;
+        const padding = Math.max(0, parseInt(getVal('padding', '1'), 10) || 0);
+        const squareImg = getChecked('square-img');
+        const align = getVal('text-align', 'center');
 
         const lineHeight = fontSize * lineSpacing;
 
+        ctx.font = `${fontSize}px ${fontFamily}`;
+        ctx.fillStyle = color;
+        ctx.textBaseline = 'top';
+
+        let yOffset = padding;
+        if (squareImg) {
+            yOffset = (lh - lines.length * lineHeight) / 2;
+        }
+
+        lines.forEach((line, index) => {
+            const lineWidth = ctx.measureText(line).width;
+            let xOffset;
+            if (squareImg || align === 'center') {
+                xOffset = (lw - lineWidth) / 2;
+            } else if (align === 'right') {
+                xOffset = lw - lineWidth - padding;
+            } else {
+                xOffset = padding;
+            }
+            ctx.fillText(line, xOffset, yOffset + index * lineHeight);
+        });
+    }
+
+    /* ===================== 图片生成 ===================== */
+
+    function generateImage() {
         const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
+        const text = document.getElementById('text-input').value;
 
-        context.font = `${fontSize}px ${fontFamily}`;
+        // 空文本保护
+        if (!text.trim()) {
+            canvas.width = 0;
+            canvas.height = 0;
+            applyPreviewScale();
+            updateOutputInfo();
+            return;
+        }
 
-        const maxLineWidth = Math.max(...lines.map(line => context.measureText(line).width));
+        const maxCharsPerLine = Math.max(1, parseInt(getVal('max-chars-per-line', '50'), 10) || 50);
+        const lines = text.split('\n').map(line => {
+            if (line === '') return [''];
+            const regex = new RegExp(`.{1,${maxCharsPerLine}}`, 'g');
+            return line.match(regex);
+        }).flat();
 
-        const scaleFactor = 10;
+        const fontSize = Math.max(1, parseInt(getVal('font-size', '4'), 10) || 4);
+        const fontFamily = getVal('font-family', 'SimSun');
+        const lineSpacing = parseFloat(getVal('line-spacing', '1.2')) || 1.2;
+        const padding = Math.max(0, parseInt(getVal('padding', '1'), 10) || 0);
+        const squareImg = getChecked('square-img');
 
-        let canvasWidth = (maxLineWidth + 2 * padding) * scaleFactor;
-        let canvasHeight = (lines.length * lineHeight + 2 * padding) * scaleFactor;
+        const lineHeight = fontSize * lineSpacing;
+
+        const probe = document.createElement('canvas').getContext('2d');
+        probe.font = `${fontSize}px ${fontFamily}`;
+        const maxLineWidth = Math.max(...lines.map(line => probe.measureText(line).width));
+
+        let canvasWidth = (maxLineWidth + 2 * padding) * BASE_SCALE;
+        let canvasHeight = (lines.length * lineHeight + 2 * padding) * BASE_SCALE;
 
         if (squareImg) {
             const maxSize = Math.max(canvasWidth, canvasHeight);
@@ -53,113 +170,143 @@
         canvas.width = Math.floor(canvasWidth);
         canvas.height = Math.floor(canvasHeight);
 
-        context.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        drawScene(canvas, 1);
 
-        if (backgroundImage) {
-            const bgOpacity = document.getElementById('bg-opacity').value / 100;
-            const fitMode = document.getElementById('bg-fit').value;
-
-            context.save();
-            context.globalAlpha = bgOpacity;
-
-            const canvasWidthScaled = canvas.width / scaleFactor;
-            const canvasHeightScaled = canvas.height / scaleFactor;
-
-            switch (fitMode) {
-                case 'cover':
-                    drawImageCover(context, backgroundImage, 0, 0, canvasWidthScaled, canvasHeightScaled);
-                    break;
-                case 'contain':
-                    drawImageContain(context, backgroundImage, 0, 0, canvasWidthScaled, canvasHeightScaled);
-                    break;
-                case 'stretch':
-                    context.drawImage(backgroundImage, 0, 0, canvasWidthScaled, canvasHeightScaled);
-                    break;
-                case 'tile':
-                    drawImageTile(context, backgroundImage, canvasWidthScaled, canvasHeightScaled);
-                    break;
-            }
-
-            context.restore();
-        } else {
-            const bgColorStart = document.getElementById('bg-color-start').value;
-            const bgColorEnd = document.getElementById('bg-color-end').value;
-            const gradientAngle = parseInt(document.getElementById('gradient-angle').value, 10) || 0;
-            const bgOpacity = document.getElementById('bg-opacity').value / 100;
-
-            const angleInRad = (gradientAngle - 90) * Math.PI / 180;
-            const canvasWidthScaled = canvas.width / scaleFactor;
-            const canvasHeightScaled = canvas.height / scaleFactor;
-            const diagonal = Math.sqrt(canvasWidthScaled * canvasWidthScaled + canvasHeightScaled * canvasHeightScaled);
-
-            const centerX = canvasWidthScaled / 2;
-            const centerY = canvasHeightScaled / 2;
-            const startX = centerX - Math.cos(angleInRad) * diagonal;
-            const startY = centerY - Math.sin(angleInRad) * diagonal;
-            const endX = centerX + Math.cos(angleInRad) * diagonal;
-            const endY = centerY + Math.sin(angleInRad) * diagonal;
-
-            const gradient = context.createLinearGradient(startX, startY, endX, endY);
-
-            gradient.addColorStop(0, addAlphaToColor(bgColorStart, bgOpacity));
-            gradient.addColorStop(0.25, mixColors(bgColorStart, bgColorEnd, 0.25, bgOpacity));
-            gradient.addColorStop(0.5, mixColors(bgColorStart, bgColorEnd, 0.5, bgOpacity));
-            gradient.addColorStop(0.75, mixColors(bgColorStart, bgColorEnd, 0.75, bgOpacity));
-            gradient.addColorStop(1, addAlphaToColor(bgColorEnd, bgOpacity));
-
-            context.fillStyle = gradient;
-            context.fillRect(0, 0, canvasWidthScaled, canvasHeightScaled);
-        }
-
-        context.font = `${fontSize}px ${fontFamily}`;
-        context.fillStyle = color;
-        context.textBaseline = 'top';
-
-        let yOffset = padding;
-        if (squareImg) {
-            yOffset = (canvasHeight / scaleFactor - lines.length * lineHeight) / 2;
-        }
-
-        lines.forEach((line, index) => {
-            const xOffset = squareImg ?
-                (canvasWidth / scaleFactor - context.measureText(line).width) / 2 :
-                padding;
-            context.fillText(line, xOffset, yOffset + index * lineHeight);
-        });
-
-        // 预览缩放
-        const previewArea = document.querySelector('.preview-area');
-        const previewWidth = previewArea.clientWidth;
-        const scale = previewWidth / canvas.width;
-
-        if (canvas.width > previewWidth) {
-            canvas.style.width = previewWidth + 'px';
-            canvas.style.height = (canvas.height * scale) + 'px';
-        } else {
-            canvas.style.width = '';
-            canvas.style.height = '';
-        }
-
+        applyPreviewScale();
+        updateOutputInfo();
         canvas.title = '点击查看原始大小';
     }
 
-    /* ===================== 图床上传（原生 fetch，替代 jQuery） ===================== */
+    /* ===================== 预览缩放 ===================== */
 
-    function uploadToIPFS(blob, filename) {
+    function applyPreviewScale() {
+        const canvas = document.getElementById('canvas');
+        const previewArea = document.getElementById('preview-area');
+        const pWidth = previewArea.clientWidth;
+
+        if (canvas.width === 0) return;
+
+        if (previewZoom === 'fit') {
+            if (canvas.width > pWidth) {
+                const s = pWidth / canvas.width;
+                canvas.style.width = pWidth + 'px';
+                canvas.style.height = (canvas.height * s) + 'px';
+            } else {
+                canvas.style.width = '';
+                canvas.style.height = '';
+            }
+        } else {
+            const z = parseInt(previewZoom, 10) || 1;
+            canvas.style.width = (canvas.width * z) + 'px';
+            canvas.style.height = (canvas.height * z) + 'px';
+        }
+    }
+
+    /* ===================== 输出信息（尺寸 + 估算大小） ===================== */
+
+    function updateOutputInfo() {
+        const canvas = document.getElementById('canvas');
+        const info = document.getElementById('output-info');
+        const hint = document.getElementById('font-size-hint');
+        if (!info || !canvas) return;
+
+        if (canvas.width === 0) {
+            info.textContent = '';
+            return;
+        }
+
+        const exportScale = parseInt(getVal('export-scale', '2'), 10) || 1;
+        const outW = canvas.width * exportScale;
+        const outH = canvas.height * exportScale;
+        const format = getVal('export-format', 'png');
+
+        info.textContent = `${outW} × ${outH} px · ${format.toUpperCase()} @${exportScale}x`;
+
+        if (hint) {
+            const fontSize = parseInt(getVal('font-size', '4'), 10) || 4;
+            hint.textContent = `输出约 ${fontSize * BASE_SCALE * exportScale} px`;
+        }
+
+        // 异步估算文件大小（超大画布跳过，避免卡顿）
+        if (canvas.width * canvas.height < 30 * 1000 * 1000) {
+            const mime = format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
+            const quality = (parseInt(getVal('export-quality', '90'), 10) || 90) / 100;
+            canvas.toBlob(function(blob) {
+                if (blob) info.textContent += ` · 约 ${formatSize(blob.size * exportScale * exportScale)}`;
+            }, mime, quality);
+        }
+    }
+
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+    }
+
+    /* ===================== 导出（下载 / 上传共用） ===================== */
+
+    function renderExportBlob(callback) {
+        const canvas = document.getElementById('canvas');
+        if (canvas.width === 0) {
+            handleError(new Error('empty canvas'), '请先输入文本');
+            return;
+        }
+
+        const format = getVal('export-format', 'png');
+        const exportScale = parseInt(getVal('export-scale', '2'), 10) || 1;
+        const quality = (parseInt(getVal('export-quality', '90'), 10) || 90) / 100;
+        const mime = format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
+
+        // 透明背景导出 JPEG 时垫白底
+        const needJpegWhiteBg = format === 'jpeg' && getChecked('transparent-bg');
+
+        function finalize(target, blob) {
+            if (blob) {
+                callback(blob);
+            } else if (needJpegWhiteBg && target !== canvas) {
+                // 垫白底需要重绘后重试
+                target.toBlob(callback, mime, quality);
+            } else {
+                handleError(new Error('toBlob returned null'), '导出失败，请重试');
+            }
+        }
+
+        if (exportScale === 1 && !needJpegWhiteBg) {
+            canvas.toBlob(function(blob) { finalize(canvas, blob); }, mime, quality);
+            return;
+        }
+
+        // 离屏高清渲染
+        const temp = document.createElement('canvas');
+        temp.width = Math.floor(canvas.width * exportScale);
+        temp.height = Math.floor(canvas.height * exportScale);
+        drawScene(temp, exportScale);
+
+        if (needJpegWhiteBg) {
+            const ctx = temp.getContext('2d');
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, temp.width, temp.height);
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        temp.toBlob(function(blob) { finalize(temp, blob); }, mime, quality);
+    }
+
+    /* ===================== 图床上传 ===================== */
+
+    function uploadToIPFS(blob) {
         const api = 'https://cdn.ipfsscan.io/api/v0/add?pin=false';
         const formData = new FormData();
-        formData.append('file', blob, `${filename}.png`);
+        formData.append('file', blob, blob.name || 'text2img.png');
 
         const maxRetries = 3;
         let retryCount = 0;
 
         if (blob.size > 5 * 1024 * 1024) { // 5MB限制
-            handleError(new Error('file too large'), '图片超过 5MB，请降低字号或减少文本');
+            handleError(new Error('file too large'), '图片超过 5MB，请降低倍率或减少文本');
             return;
         }
-
-        console.log('正在上传...');
 
         function attemptUpload() {
             fetch(api, { method: 'POST', body: formData })
@@ -169,11 +316,12 @@
                 })
                 .then(response => {
                     if (response.Hash) {
-                        const imgSrc = `https://i0.img2ipfs.com/ipfs/${response.Hash}?filename=${filename}.png`;
+                        const filename = (document.getElementById('filename').value || 'text2img').replace(/\.(png|jpe?g|webp)$/i, '');
+                        const ext = blob.type === 'image/jpeg' ? 'jpg' : blob.type === 'image/webp' ? 'webp' : 'png';
+                        const imgSrc = `https://i0.img2ipfs.com/ipfs/${response.Hash}?filename=${filename}.${ext}`;
                         document.getElementById('link').value = imgSrc;
                         document.getElementById('markdown-link').value = `![Image](${imgSrc})`;
                         document.getElementById('html-link').value = `<img src="${imgSrc}" alt="Image">`;
-                        console.log('上传成功，图片地址:', imgSrc);
                         showToast('上传成功');
 
                         setTimeout(() => seeding(response.Hash), 3000);
@@ -255,44 +403,49 @@
 
     /* ===================== 设置持久化 ===================== */
 
+    const SETTINGS_FIELDS = [
+        'font-size', 'font-family', 'color', 'text-align', 'line-spacing',
+        'max-chars-per-line', 'padding', 'square-img',
+        'transparent-bg', 'bg-color-start', 'bg-color-end', 'gradient-angle', 'bg-opacity', 'bg-fit',
+        'filename', 'export-format', 'export-quality', 'export-scale'
+    ];
+
     function saveSettings() {
-        const settings = {
-            fontSize: document.getElementById('font-size').value,
-            fontFamily: document.getElementById('font-family').value,
-            color: document.getElementById('color').value,
-            bgColorStart: document.getElementById('bg-color-start').value,
-            bgColorEnd: document.getElementById('bg-color-end').value,
-            gradientAngle: document.getElementById('gradient-angle').value,
-            bgOpacity: document.getElementById('bg-opacity').value,
-            padding: document.getElementById('padding').value,
-            maxCharsPerLine: document.getElementById('max-chars-per-line').value,
-            squareImg: document.getElementById('square-img').checked,
-            filename: document.getElementById('filename').value,
-            bgFit: document.getElementById('bg-fit').value,
-        };
+        const settings = {};
+        SETTINGS_FIELDS.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            settings[id] = el.type === 'checkbox' ? el.checked : el.value;
+        });
         localStorage.setItem('text2imgSettings', JSON.stringify(settings));
     }
 
     function loadSettings() {
-        const savedSettings = localStorage.getItem('text2imgSettings');
-        if (!savedSettings) return;
+        const saved = localStorage.getItem('text2imgSettings');
+        if (!saved) return;
         try {
-            const settings = JSON.parse(savedSettings);
-            document.getElementById('font-size').value = settings.fontSize;
-            document.getElementById('font-family').value = settings.fontFamily;
-            document.getElementById('color').value = settings.color;
-            document.getElementById('bg-color-start').value = settings.bgColorStart || '#ffffff';
-            document.getElementById('bg-color-end').value = settings.bgColorEnd || '#ffffff';
-            document.getElementById('gradient-angle').value = settings.gradientAngle || '0';
-            document.getElementById('bg-opacity').value = settings.bgOpacity || '100';
-            document.getElementById('padding').value = settings.padding;
-            document.getElementById('max-chars-per-line').value = settings.maxCharsPerLine || '50';
-            document.getElementById('square-img').checked = settings.squareImg;
-            document.getElementById('filename').value = settings.filename;
-            document.getElementById('bg-fit').value = settings.bgFit || 'cover';
+            const settings = JSON.parse(saved);
+            SETTINGS_FIELDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el || settings[id] === undefined) return;
+                if (el.type === 'checkbox') {
+                    el.checked = !!settings[id];
+                } else {
+                    el.value = settings[id];
+                }
+            });
+            syncQualityGroup();
         } catch (e) {
             console.warn('设置解析失败:', e);
         }
+    }
+
+    /* ===================== 导出格式联动 ===================== */
+
+    function syncQualityGroup() {
+        const format = getVal('export-format', 'png');
+        const group = document.getElementById('quality-group');
+        if (group) group.style.display = format === 'png' ? 'none' : '';
     }
 
     /* ===================== Google 字体动态加载 ===================== */
@@ -339,9 +492,20 @@
     }
 
     function loadFontForCurrentSelection() {
-        const value = document.getElementById('font-family').value;
+        const value = getVal('font-family', 'SimSun');
         const match = value.match(/^'([^']+)'/);
         if (match) loadGoogleFont(match[1]);
+    }
+
+    // 字体加载完成后重绘，避免先按回退字体生成再跳变
+    function regenerateWithFont() {
+        loadFontForCurrentSelection();
+        const font = getVal('font-family', 'SimSun');
+        const size = parseInt(getVal('font-size', '4'), 10) || 4;
+        const loadPromise = document.fonts && document.fonts.load
+            ? document.fonts.load(`${size}px ${font}`)
+            : Promise.resolve();
+        loadPromise.then(generateImage).catch(generateImage);
     }
 
     /* ===================== 背景绘制 ===================== */
@@ -419,6 +583,23 @@
         const b = Math.round(b1 * (1 - ratio) + b2 * ratio);
 
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    /* ===================== 背景图片设置 ===================== */
+
+    function setBackgroundImageFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                backgroundImage = img;
+                generateImage();
+                showToast('已设置背景图片');
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
     }
 
     /* ===================== 模态框 ===================== */
@@ -512,6 +693,76 @@
         };
     }
 
+    /* ===================== 拖拽支持 ===================== */
+
+    function initDragDrop() {
+        const previewArea = document.getElementById('preview-area');
+        const hint = document.getElementById('preview-drop-hint');
+        const textInput = document.getElementById('text-input');
+        const textWrap = textInput.closest('.text-input-wrap');
+
+        // 拖入图片 → 背景
+        ['dragenter', 'dragover'].forEach(evt => {
+            previewArea.addEventListener(evt, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                previewArea.classList.add('dragover');
+            });
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+            previewArea.addEventListener(evt, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                previewArea.classList.remove('dragover');
+            });
+        });
+        previewArea.addEventListener('drop', function(e) {
+            const file = e.dataTransfer.files && e.dataTransfer.files[0];
+            if (file) setBackgroundImageFile(file);
+        });
+
+        // 拖入 txt → 文本内容
+        ['dragenter', 'dragover'].forEach(evt => {
+            textWrap.addEventListener(evt, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                textWrap.classList.add('dragover');
+            });
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+            textWrap.addEventListener(evt, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                textWrap.classList.remove('dragover');
+            });
+        });
+        textWrap.addEventListener('drop', function(e) {
+            const file = e.dataTransfer.files && e.dataTransfer.files[0];
+            if (!file) return;
+            if (file.type.startsWith('text/') || /\.txt$/i.test(file.name)) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    textInput.value = event.target.result.trim();
+                    generateImage();
+                    showToast('已导入文本内容');
+                };
+                reader.readAsText(file);
+            } else if (file.type.startsWith('image/')) {
+                setBackgroundImageFile(file);
+            }
+        });
+
+        // 提示文字跟随显示/隐藏
+        if (hint) {
+            const updateHint = () => {
+                const c = document.getElementById('canvas');
+                hint.style.display = (!backgroundImage && c.width === 0) ? 'flex' : 'none';
+            };
+            document.addEventListener('DOMContentLoaded', updateHint);
+            setTimeout(updateHint, 100);
+        }
+    }
+
     /* ===================== 初始化 ===================== */
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -529,19 +780,43 @@
         // 输入实时生成（节流）
         textInput.addEventListener('input', throttle(generateImage, 500));
 
-        // 设置变更保存
-        const settingsElements = [
-            'font-size', 'font-family', 'color', 'bg-color-start', 'bg-color-end', 'gradient-angle', 'bg-opacity',
-            'padding', 'max-chars-per-line', 'square-img', 'filename', 'bg-fit'
-        ];
-        settingsElements.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) element.addEventListener('change', saveSettings);
+        // 设置变更：保存 + 实时生成
+        SETTINGS_FIELDS.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('change', function() {
+                saveSettings();
+                if (id === 'export-format') syncQualityGroup();
+                if (id === 'transparent-bg' || id === 'square-img') generateImage();
+            });
         });
 
-        // 字体选择变化时动态加载
-        document.getElementById('font-family').addEventListener('change', function() {
-            loadFontForCurrentSelection();
+        // 数值控件 input 事件也实时刷新预览
+        ['font-size', 'line-spacing', 'padding', 'max-chars-per-line', 'gradient-angle', 'bg-opacity', 'text-align']
+            .forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', throttle(generateImage, 300));
+            });
+
+        // 颜色实时刷新
+        ['color', 'bg-color-start', 'bg-color-end'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', throttle(generateImage, 150));
+        });
+
+        // 字体：动态加载 + 加载完成后重绘
+        document.getElementById('font-family').addEventListener('change', regenerateWithFont);
+
+        // 导出格式联动
+        syncQualityGroup();
+
+        // 预览缩放
+        document.querySelectorAll('.zoom-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                previewZoom = this.dataset.zoom;
+                document.querySelectorAll('.zoom-btn').forEach(b => b.classList.toggle('active', b === this));
+                applyPreviewScale();
+            });
         });
 
         // 预览点击放大
@@ -551,39 +826,30 @@
 
         // 上传
         document.getElementById('upload-btn').addEventListener('click', function() {
-            canvas.toBlob(function(blob) {
-                if (!blob) {
-                    handleError(new Error('toBlob returned null'), '生成图片失败，请先输入文本');
-                    return;
-                }
-                const filename = document.getElementById('filename').value || 'text2img';
-                uploadToIPFS(blob, filename);
+            renderExportBlob(function(blob) {
+                blob.name = (document.getElementById('filename').value || 'text2img') + '.' + blob.type.split('/')[1].replace('jpeg', 'jpg');
+                uploadToIPFS(blob);
             });
         });
 
         // 下载
         document.getElementById('download-btn').addEventListener('click', function() {
-            const filename = document.getElementById('filename').value || 'text2img';
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = `${filename}.png`;
-            link.click();
+            renderExportBlob(function(blob) {
+                const filename = document.getElementById('filename').value || 'text2img';
+                const ext = blob.type === 'image/jpeg' ? 'jpg' : blob.type === 'image/webp' ? 'webp' : 'png';
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${filename}.${ext}`;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            });
         });
 
-        // 背景图
+        // 背景图（文件选择器）
         document.getElementById('bg-image').addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    backgroundImage = img;
-                    generateImage();
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+            if (file) setBackgroundImageFile(file);
         });
 
         document.getElementById('clear-bg').addEventListener('click', function() {
@@ -591,6 +857,20 @@
             document.getElementById('bg-image').value = '';
             generateImage();
         });
+
+        // 快捷键：Ctrl+Enter 生成
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                generateImage();
+            }
+        });
+
+        // 拖拽支持
+        initDragDrop();
+
+        // 窗口尺寸变化时重算预览缩放
+        window.addEventListener('resize', throttle(applyPreviewScale, 200));
 
         // 首次加载生成一张默认图（含占位提示文本）
         if (!textInput.value.trim()) {
